@@ -1,3 +1,5 @@
+"use client";
+
 import { Check, Trash2, MoreHorizontal, Circle, PlayCircle, CheckCircle2, Pencil } from 'lucide-react';
 import { updateTaskStatus, deleteTask, editTask, getCategories, getTopics, getProjects } from '@/app/actions';
 import { useTransition, useState, useEffect } from 'react';

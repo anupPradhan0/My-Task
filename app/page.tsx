@@ -84,7 +84,7 @@ export default async function Dashboard() {
           <h2 className="text-lg font-bold text-slate-900">Today's Board</h2>
         </div>
         
-        <div className="flex-1 overflow-x-auto pb-4">
+        <div className="flex-1 overflow-x-auto pb-32">
           <div className="flex gap-4 min-w-[800px] h-full items-start">
             <div className="w-80 rounded-xl bg-slate-50/50 border border-slate-200/60 p-3">
               <TaskList title="Fundamentals" tasks={fundamentals} color="blue" />

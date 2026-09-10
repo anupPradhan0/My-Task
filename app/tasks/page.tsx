@@ -17,7 +17,7 @@ export default async function TasksPage() {
         <CreateTaskButton />
       </div>
 
-      <div className="flex-1 overflow-x-auto">
+      <div className="flex-1 overflow-x-auto pb-32">
         <div className="flex gap-4 min-w-[800px] h-full items-start">
           <div className="w-80 rounded-xl bg-slate-50/50 border border-slate-200/60 p-3 h-full">
             <TaskList title="To Do" tasks={todo} color="orange" />

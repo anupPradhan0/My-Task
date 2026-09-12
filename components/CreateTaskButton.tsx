@@ -6,17 +6,34 @@ import { createTask } from '@/app/actions';
 import { loadFormOptions } from '@/components/formOptions';
 import { ModalPortal } from '@/components/ModalPortal';
 
-export function CreateTaskButton() {
+export function CreateTaskButton({ fab = false }: { fab?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  if (fab) {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          aria-label="Add task"
+          className="sm:hidden fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-lg shadow-blue-600/35 active:scale-95 transition-transform"
+        >
+          <Plus className="h-6 w-6" strokeWidth={2.5} />
+        </button>
+        {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} />}
+      </>
+    );
+  }
 
   return (
     <>
       <button 
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/25 hover:bg-blue-700 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+        className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/25 hover:bg-blue-700 active:scale-[0.98] transition-all"
       >
         <Plus className="h-4 w-4" strokeWidth={2.5} />
-        <span className="hidden sm:inline">Add Task</span>
+        Add Task
       </button>
 
       {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} />}
@@ -121,7 +138,7 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
               <input
                 required
                 placeholder="What needs to be done?"
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 autoFocus
@@ -133,7 +150,7 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
                 <label className="mb-1.5 block text-sm font-semibold text-slate-700">Category</label>
                 <select
                   required
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all bg-white appearance-none"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all bg-white appearance-none"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
@@ -146,7 +163,7 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
                 <input
                   type="date"
                   required
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   value={plannedDate}
                   onChange={(e) => setPlannedDate(e.target.value)}
                 />
@@ -157,7 +174,7 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-slate-700">Topic</label>
                 <select
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all bg-white"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all bg-white"
                   value={topicId}
                   onChange={(e) => setTopicId(e.target.value)}
                 >
@@ -172,7 +189,7 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
                 <label className="mb-1.5 block text-sm font-semibold text-slate-700">Project</label>
                 <select
                   required
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all bg-white"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all bg-white"
                   value={projectId}
                   onChange={(e) => setProjectId(e.target.value)}
                 >
@@ -186,14 +203,14 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                className="flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPending}
-                className="flex-[2] rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20 disabled:opacity-50 transition-all"
+                className="flex-[2] rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20 disabled:opacity-50 transition-all"
               >
                 {isPending ? 'Saving...' : 'Create Task'}
               </button>

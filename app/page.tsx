@@ -2,6 +2,7 @@ import { getTasks } from './actions';
 import { CheckCircle2, Flame, Target } from 'lucide-react';
 import { TaskList } from '@/components/TaskList';
 import { CreateTaskButton } from '@/components/CreateTaskButton';
+import { BoardColumn, BoardColumns } from '@/components/Board';
 
 function greetingForHour(hour: number) {
   if (hour < 12) return 'Good morning';
@@ -41,65 +42,67 @@ export default async function Dashboard() {
     : 0;
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 anim-rise">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--faint)] mb-2">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex items-start justify-between gap-3 anim-rise">
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-[var(--faint)] mb-1.5 sm:mb-2">
             {dateLabel}
           </p>
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--ink)]">
             {greetingForHour(now.getHours())}
           </h1>
-          <p className="text-[var(--muted)] mt-1.5 text-sm sm:text-base">
+          <p className="text-[var(--muted)] mt-1.5 text-sm leading-snug">
             {tasksToday.length === 0
-              ? 'No tasks planned for today — add one to get moving.'
-              : `${completedToday} of ${tasksToday.length} done · ${progress}% of today’s board`}
+              ? 'No tasks for today — add one to get moving.'
+              : `${completedToday} of ${tasksToday.length} done · ${progress}%`}
           </p>
         </div>
-        <CreateTaskButton />
+        <div className="hidden sm:block shrink-0">
+          <CreateTaskButton />
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 stagger">
-        <div className="surface anim-rise rounded-2xl p-5 shadow-sm shadow-slate-900/5">
-          <div className="mb-4 h-10 w-10 rounded-xl bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center">
-            <Target className="h-5 w-5" />
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 stagger">
+        <div className="surface anim-rise rounded-2xl p-3.5 sm:p-5 shadow-sm shadow-slate-900/5">
+          <div className="mb-3 sm:mb-4 h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center">
+            <Target className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
-          <p className="text-sm font-medium text-[var(--muted)]">Today&apos;s focus</p>
-          <div className="flex items-baseline gap-2 mt-1">
-            <p className="text-3xl font-extrabold tracking-tight text-[var(--ink)]">{tasksToday.length}</p>
-            <span className="text-xs font-medium text-[var(--faint)]">tasks</span>
+          <p className="text-xs sm:text-sm font-medium text-[var(--muted)]">Today&apos;s focus</p>
+          <div className="flex items-baseline gap-1.5 mt-1">
+            <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--ink)]">{tasksToday.length}</p>
+            <span className="text-[11px] sm:text-xs font-medium text-[var(--faint)]">tasks</span>
           </div>
         </div>
 
-        <div className="surface anim-rise rounded-2xl p-5 shadow-sm shadow-slate-900/5">
-          <div className="mb-4 h-10 w-10 rounded-xl bg-[var(--ok-soft)] text-[var(--ok)] flex items-center justify-center">
-            <CheckCircle2 className="h-5 w-5" />
+        <div className="surface anim-rise rounded-2xl p-3.5 sm:p-5 shadow-sm shadow-slate-900/5">
+          <div className="mb-3 sm:mb-4 h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-[var(--ok-soft)] text-[var(--ok)] flex items-center justify-center">
+            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
-          <p className="text-sm font-medium text-[var(--muted)]">Done today</p>
-          <div className="flex items-baseline gap-2 mt-1">
-            <p className="text-3xl font-extrabold tracking-tight text-[var(--ink)]">{completedToday}</p>
-            <span className="text-xs font-medium text-[var(--faint)]">completed</span>
+          <p className="text-xs sm:text-sm font-medium text-[var(--muted)]">Done today</p>
+          <div className="flex items-baseline gap-1.5 mt-1">
+            <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--ink)]">{completedToday}</p>
+            <span className="text-[11px] sm:text-xs font-medium text-[var(--faint)]">done</span>
           </div>
         </div>
         
-        <div className="surface anim-rise rounded-2xl p-5 shadow-sm shadow-slate-900/5 col-span-2 lg:col-span-1">
-          <div className="mb-4 h-10 w-10 rounded-xl bg-[var(--warn-soft)] text-[var(--warn)] flex items-center justify-center">
-            <Flame className="h-5 w-5" />
+        <div className="surface anim-rise rounded-2xl p-3.5 sm:p-5 shadow-sm shadow-slate-900/5 col-span-2 lg:col-span-1">
+          <div className="mb-3 sm:mb-4 h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-[var(--warn-soft)] text-[var(--warn)] flex items-center justify-center">
+            <Flame className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
-          <p className="text-sm font-medium text-[var(--muted)]">Done this week</p>
-          <div className="flex items-baseline gap-2 mt-1">
-            <p className="text-3xl font-extrabold tracking-tight text-[var(--ink)]">{completedThisWeek}</p>
-            <span className="text-xs font-medium text-[var(--faint)]">tasks</span>
+          <p className="text-xs sm:text-sm font-medium text-[var(--muted)]">Done this week</p>
+          <div className="flex items-baseline gap-1.5 mt-1">
+            <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--ink)]">{completedThisWeek}</p>
+            <span className="text-[11px] sm:text-xs font-medium text-[var(--faint)]">tasks</span>
           </div>
         </div>
       </div>
 
-      <div className="space-y-4 anim-rise" style={{ animationDelay: '0.14s' }}>
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold tracking-tight text-[var(--ink)]">Today&apos;s board</h2>
+      <div className="space-y-3 sm:space-y-4 anim-rise" style={{ animationDelay: '0.14s' }}>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-base sm:text-lg font-bold tracking-tight text-[var(--ink)]">Today&apos;s board</h2>
           {tasksToday.length > 0 && (
-            <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-[var(--muted)]">
-              <div className="h-1.5 w-24 rounded-full bg-[var(--surface-2)] overflow-hidden">
+            <div className="flex items-center gap-2 text-xs font-medium text-[var(--muted)]">
+              <div className="h-1.5 w-16 sm:w-24 rounded-full bg-[var(--surface-2)] overflow-hidden">
                 <div
                   className="h-full rounded-full bg-[var(--accent)] transition-all duration-500"
                   style={{ width: `${progress}%` }}
@@ -110,20 +113,20 @@ export default async function Dashboard() {
           )}
         </div>
         
-        <div className="overflow-x-auto pb-8 -mx-1 px-1">
-          <div className="flex gap-4 min-w-[800px] items-start">
-            <div className="w-80 rounded-2xl surface p-3.5 shadow-sm shadow-slate-900/5">
-              <TaskList title="Fundamentals" tasks={fundamentals} color="blue" />
-            </div>
-            <div className="w-80 rounded-2xl surface p-3.5 shadow-sm shadow-slate-900/5">
-              <TaskList title="DSA" tasks={dsa} color="orange" />
-            </div>
-            <div className="w-80 rounded-2xl surface p-3.5 shadow-sm shadow-slate-900/5">
-              <TaskList title="Projects" tasks={projects} color="teal" />
-            </div>
-          </div>
-        </div>
+        <BoardColumns>
+          <BoardColumn>
+            <TaskList title="Fundamentals" tasks={fundamentals} color="blue" />
+          </BoardColumn>
+          <BoardColumn>
+            <TaskList title="DSA" tasks={dsa} color="orange" />
+          </BoardColumn>
+          <BoardColumn>
+            <TaskList title="Projects" tasks={projects} color="teal" />
+          </BoardColumn>
+        </BoardColumns>
       </div>
+
+      <CreateTaskButton fab />
     </div>
   );
 }

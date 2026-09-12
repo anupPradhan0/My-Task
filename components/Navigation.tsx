@@ -5,12 +5,20 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, CheckSquare, CalendarDays, BarChart3, FolderKanban } from 'lucide-react';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Home', href: '/', icon: LayoutDashboard },
   { name: 'Tasks', href: '/tasks', icon: CheckSquare },
-  { name: 'Planner', href: '/planner', icon: CalendarDays },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { name: 'Plan', href: '/planner', icon: CalendarDays },
+  { name: 'Stats', href: '/analytics', icon: BarChart3 },
   { name: 'Projects', href: '/projects', icon: FolderKanban },
 ];
+
+const desktopLabels: Record<string, string> = {
+  Home: 'Dashboard',
+  Tasks: 'Tasks',
+  Plan: 'Planner',
+  Stats: 'Analytics',
+  Projects: 'Projects',
+};
 
 function Brand({ compact = false }: { compact?: boolean }) {
   return (
@@ -49,7 +57,7 @@ export function AppSidebar() {
               }`}
             >
               <item.icon className={`h-4 w-4 transition-colors ${active ? 'text-white' : 'text-[var(--faint)] group-hover:text-[var(--ink)]'}`} />
-              {item.name}
+              {desktopLabels[item.name] ?? item.name}
             </Link>
           );
         })}
@@ -73,14 +81,14 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 flex h-16 w-full border-t border-[var(--line)]/80 bg-white/85 backdrop-blur-md md:hidden pb-safe">
+    <nav className="fixed inset-x-0 bottom-0 z-50 flex h-[calc(3.75rem+env(safe-area-inset-bottom,0px))] w-full border-t border-[var(--line)]/80 bg-white/90 backdrop-blur-md md:hidden pb-safe">
       {navigation.map((item) => {
         const active = isActivePath(pathname, item.href);
         return (
           <Link
             key={item.name}
             href={item.href}
-            className={`relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 transition-colors ${
+            className={`relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 pt-1.5 pb-1 transition-colors ${
               active ? 'text-[var(--accent)]' : 'text-[var(--faint)]'
             }`}
           >
@@ -88,7 +96,7 @@ export function MobileNav() {
               <span className="absolute top-0 h-0.5 w-8 rounded-full bg-[var(--accent)]" />
             )}
             <item.icon className="h-5 w-5 shrink-0" strokeWidth={active ? 2.25 : 1.75} />
-            <span className="max-w-full truncate text-[10px] font-semibold">{item.name}</span>
+            <span className="max-w-full truncate text-[10px] font-semibold leading-none">{item.name}</span>
           </Link>
         );
       })}

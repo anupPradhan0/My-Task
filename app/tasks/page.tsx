@@ -1,6 +1,7 @@
 import { getTasks } from '@/app/actions';
 import { CreateTaskButton } from '@/components/CreateTaskButton';
 import { TaskList } from '@/components/TaskList';
+import { BoardColumn, BoardColumns } from '@/components/Board';
 
 export default async function TasksPage() {
   const allTasks = await getTasks();
@@ -10,10 +11,10 @@ export default async function TasksPage() {
   const completed = allTasks.filter(t => t.task.status === 'COMPLETED');
 
   return (
-    <div className="space-y-6 h-full flex flex-col">
-      <div className="flex items-end justify-between gap-4 anim-rise">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--faint)] mb-2">
+    <div className="space-y-5 sm:space-y-6">
+      <div className="flex items-start justify-between gap-3 anim-rise">
+        <div className="min-w-0">
+          <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-[var(--faint)] mb-1.5 sm:mb-2">
             Workflow
           </p>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--ink)]">All tasks</h1>
@@ -21,22 +22,26 @@ export default async function TasksPage() {
             {allTasks.length} total · {inProgress.length} in progress
           </p>
         </div>
-        <CreateTaskButton />
-      </div>
-
-      <div className="flex-1 overflow-x-auto pb-8 -mx-1 px-1 anim-rise" style={{ animationDelay: '0.08s' }}>
-        <div className="flex gap-4 min-w-[800px] items-start">
-          <div className="w-80 rounded-2xl surface p-3.5 shadow-sm shadow-slate-900/5">
-            <TaskList title="To Do" tasks={todo} color="orange" />
-          </div>
-          <div className="w-80 rounded-2xl surface p-3.5 shadow-sm shadow-slate-900/5">
-            <TaskList title="In Progress" tasks={inProgress} color="blue" />
-          </div>
-          <div className="w-80 rounded-2xl surface p-3.5 shadow-sm shadow-slate-900/5">
-            <TaskList title="Completed" tasks={completed} color="teal" />
-          </div>
+        <div className="hidden sm:block shrink-0">
+          <CreateTaskButton />
         </div>
       </div>
+
+      <div className="anim-rise" style={{ animationDelay: '0.08s' }}>
+        <BoardColumns>
+          <BoardColumn>
+            <TaskList title="To Do" tasks={todo} color="orange" />
+          </BoardColumn>
+          <BoardColumn>
+            <TaskList title="In Progress" tasks={inProgress} color="blue" />
+          </BoardColumn>
+          <BoardColumn>
+            <TaskList title="Completed" tasks={completed} color="teal" />
+          </BoardColumn>
+        </BoardColumns>
+      </div>
+
+      <CreateTaskButton fab />
     </div>
   );
 }

@@ -19,6 +19,16 @@ export async function getProjects() {
   return await db.select().from(projects).where(eq(projects.isActive, true));
 }
 
+// one round-trip for create/edit modals instead of 3
+export async function getTaskFormOptions() {
+  const [cats, tops, projs] = await Promise.all([
+    db.select().from(categories),
+    db.select().from(topics),
+    db.select().from(projects).where(eq(projects.isActive, true)),
+  ]);
+  return { categories: cats, topics: tops, projects: projs };
+}
+
 export async function getAllProjects() {
   return await db.select().from(projects);
 }

@@ -5,28 +5,35 @@ import { TaskList } from '@/components/TaskList';
 export default async function TasksPage() {
   const allTasks = await getTasks();
   
-  // Group all by status for the general Tasks page
   const todo = allTasks.filter(t => t.task.status === 'TODO');
   const inProgress = allTasks.filter(t => t.task.status === 'IN_PROGRESS');
   const completed = allTasks.filter(t => t.task.status === 'COMPLETED');
 
   return (
     <div className="space-y-6 h-full flex flex-col">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">All Tasks</h1>
+      <div className="flex items-end justify-between gap-4 anim-rise">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--faint)] mb-2">
+            Workflow
+          </p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--ink)]">All tasks</h1>
+          <p className="text-sm text-[var(--muted)] mt-1">
+            {allTasks.length} total · {inProgress.length} in progress
+          </p>
+        </div>
         <CreateTaskButton />
       </div>
 
-      <div className="flex-1 overflow-x-auto pb-32">
-        <div className="flex gap-4 min-w-[800px] h-full items-start">
-          <div className="w-80 rounded-xl bg-slate-50/50 border border-slate-200/60 p-3 h-full">
+      <div className="flex-1 overflow-x-auto pb-8 -mx-1 px-1 anim-rise" style={{ animationDelay: '0.08s' }}>
+        <div className="flex gap-4 min-w-[800px] items-start">
+          <div className="w-80 rounded-2xl surface p-3.5 shadow-sm shadow-slate-900/5">
             <TaskList title="To Do" tasks={todo} color="orange" />
           </div>
-          <div className="w-80 rounded-xl bg-slate-50/50 border border-slate-200/60 p-3 h-full">
+          <div className="w-80 rounded-2xl surface p-3.5 shadow-sm shadow-slate-900/5">
             <TaskList title="In Progress" tasks={inProgress} color="blue" />
           </div>
-          <div className="w-80 rounded-xl bg-slate-50/50 border border-slate-200/60 p-3 h-full">
-            <TaskList title="Completed" tasks={completed} color="purple" />
+          <div className="w-80 rounded-2xl surface p-3.5 shadow-sm shadow-slate-900/5">
+            <TaskList title="Completed" tasks={completed} color="teal" />
           </div>
         </div>
       </div>

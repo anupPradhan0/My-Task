@@ -1,12 +1,16 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
-import { Navigation } from '@/components/Navigation';
+import { AppSidebar, MobileHeader, MobileNav } from '@/components/Navigation';
 
-const inter = Inter({ subsets: ['latin'] });
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: 'FocusTrack | Productivity',
+  title: 'FocusTrack',
   description: 'Personal productivity and task tracking',
 };
 
@@ -17,18 +21,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-white text-slate-900 antialiased`}>
-        <div className="flex h-[100dvh] overflow-hidden">
-          <Navigation />
+      <body className={`${jakarta.variable} font-sans antialiased`}>
+        <div className="flex h-[100dvh] w-full overflow-hidden">
+          <AppSidebar />
 
-          {/* Main Content */}
-          <div className="flex flex-1 flex-col overflow-hidden relative">
-            <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
-              <div className="mx-auto max-w-5xl">
-                {children}
-              </div>
+          <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
+            <MobileHeader />
+            <main className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
+              <div className="mx-auto w-full max-w-5xl anim-soft">{children}</div>
             </main>
           </div>
+
+          <MobileNav />
         </div>
       </body>
     </html>

@@ -1,17 +1,68 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-
-  --foreground: #0f172a;
+  --ink: #0c1222;
+  --muted: #5b6578;
+  --faint: #94a3b8;
+  --line: #e2e8f0;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --accent: #1d4ed8;
+  --accent-soft: #dbeafe;
+  --ok: #059669;
+  --ok-soft: #d1fae5;
+  --warn: #d97706;
+  --warn-soft: #fef3c7;
+  --bg0: #eef2f7;
+  --bg1: #e8eef8;
+  --bg2: #f7f5f1;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg0);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-jakarta);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #dbe7ff 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, #e8f4ef 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 40%, var(--bg2) 100%);
+  background-attachment: fixed;
+  min-height: 100dvh;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes soft-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.anim-rise {
+  animation: rise 0.45s ease-out both;
+}
+
+.anim-soft {
+  animation: soft-in 0.35s ease-out both;
+}
+
+.stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger > *:nth-child(2) { animation-delay: 0.08s; }
+.stagger > *:nth-child(3) { animation-delay: 0.12s; }
+.stagger > *:nth-child(4) { animation-delay: 0.16s; }
+
+.surface {
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }

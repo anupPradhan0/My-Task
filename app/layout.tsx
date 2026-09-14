@@ -35,7 +35,7 @@ export default function RootLayout({
           <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
             <MobileHeader />
             <main className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain p-3 sm:p-4 md:p-8 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-8">
-              <div className="mx-auto w-full max-w-5xl anim-soft">{children}</div>
+              <div className="mx-auto w-full max-w-6xl anim-soft">{children}</div>
             </main>
           </div>
 

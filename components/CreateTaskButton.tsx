@@ -6,7 +6,15 @@ import { createTask } from '@/app/actions';
 import { loadFormOptions } from '@/components/formOptions';
 import { ModalPortal } from '@/components/ModalPortal';
 
-export function CreateTaskButton({ fab = false }: { fab?: boolean }) {
+export function CreateTaskButton({
+  fab = false,
+  variant = 'default',
+  defaultDate,
+}: {
+  fab?: boolean;
+  variant?: 'default' | 'column';
+  defaultDate?: string;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   if (fab) {
@@ -20,7 +28,22 @@ export function CreateTaskButton({ fab = false }: { fab?: boolean }) {
         >
           <Plus className="h-6 w-6" strokeWidth={2.5} />
         </button>
-        {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} />}
+        {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} defaultDate={defaultDate} />}
+      </>
+    );
+  }
+
+  if (variant === 'column') {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="w-full rounded-lg border border-[var(--line)] bg-[var(--surface-2)] px-3 py-2 text-left text-sm font-semibold text-[var(--ink)]/70 hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
+        >
+          + Task
+        </button>
+        {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} defaultDate={defaultDate} />}
       </>
     );
   }
@@ -36,7 +59,7 @@ export function CreateTaskButton({ fab = false }: { fab?: boolean }) {
         Add Task
       </button>
 
-      {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} />}
+      {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} defaultDate={defaultDate} />}
     </>
   );
 }
@@ -66,7 +89,7 @@ function FormSkeleton() {
   );
 }
 
-function CreateTaskModal({ onClose }: { onClose: () => void }) {
+function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaultDate?: string }) {
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<any[]>([]);
@@ -77,7 +100,9 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
   const [categoryId, setCategoryId] = useState('');
   const [topicId, setTopicId] = useState('');
   const [projectId, setProjectId] = useState('');
-  const [plannedDate, setPlannedDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [plannedDate, setPlannedDate] = useState(
+    () => defaultDate || new Date().toISOString().split('T')[0]
+  );
 
   useEffect(() => {
     let cancelled = false;

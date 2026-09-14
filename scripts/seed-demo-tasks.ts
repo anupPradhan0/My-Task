@@ -19,10 +19,13 @@ async function main() {
   const projectsCat = allCategories.find(c => c.name === 'Projects')!;
   const fundamentalsCat = allCategories.find(c => c.name === 'Fundamentals')!;
   
-  // Just use arbitrary dates for demo
+  // Current week's Monday so Tasks weekly board shows the demo
   const getDay = (offset: number) => {
-    const d = new Date('2026-09-07'); // A Monday
-    d.setDate(d.getDate() + offset);
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    const day = d.getDay();
+    const toMon = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + toMon + offset);
     return d.toISOString().split('T')[0];
   };
 
@@ -53,7 +56,7 @@ async function main() {
     { title: 'PKS Data fix', projectId: other.id, categoryId: projectsCat.id, plannedDate: getDay(5), status: 'COMPLETED' },
     { title: 'yuviz Pr 6', projectId: yuviz.id, categoryId: projectsCat.id, plannedDate: getDay(5), status: 'COMPLETED' },
 
-    // Weekly Tasks (Assume Sunday)
+    // Sunday
     { title: 'KB vector Pr', projectId: dograh.id, categoryId: projectsCat.id, plannedDate: getDay(6), status: 'TODO' },
     { title: 'MCP Pr', projectId: pipeshub.id, categoryId: projectsCat.id, plannedDate: getDay(6), status: 'TODO' },
     { title: 'WorkFlow Pr', projectId: yuviz.id, categoryId: projectsCat.id, plannedDate: getDay(6), status: 'COMPLETED' },

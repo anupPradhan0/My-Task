@@ -10,6 +10,7 @@ async function main() {
     { name: 'Fundamentals' },
     { name: 'DSA' },
     { name: 'Projects' },
+    { name: 'Other' },
   ]).returning();
 
   const topicNames = [

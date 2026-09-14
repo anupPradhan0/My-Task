@@ -20,6 +20,7 @@ async function main() {
     { name: 'Fundamentals' },
     { name: 'DSA' },
     { name: 'Projects' },
+    { name: 'Other' },
   ]).returning();
 
   // 3. Insert Topics for Fundamentals

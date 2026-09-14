@@ -31,7 +31,7 @@ export function TaskList({ title, tasks, color }: TaskListProps) {
         </div>
       </div>
       
-      <div className="space-y-2.5 flex-1">
+      <div className="flex flex-col gap-4 flex-1">
         {tasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-28 rounded-xl border border-dashed border-[var(--line)] bg-white/40">
             <p className="text-sm text-[var(--faint)] font-medium">No tasks</p>
@@ -66,9 +66,9 @@ function TaskItem({ data }: { data: any }) {
 
   return (
     <>
-      <div className={`group relative flex flex-col gap-2.5 rounded-xl border border-[var(--line)]/80 bg-white p-3.5 shadow-sm shadow-slate-900/5 transition-all duration-200 sm:hover:-translate-y-0.5 sm:hover:shadow-md ${
+      <div className={`group relative isolate flex flex-col gap-2.5 rounded-xl border border-[var(--line)]/80 bg-white p-3.5 shadow-sm shadow-slate-900/5 transition-shadow duration-200 sm:hover:shadow-md ${
         isCompleted ? 'opacity-55' : ''
-      } ${isPending ? 'opacity-60 pointer-events-none' : ''}`}>
+      } ${isPending ? 'opacity-60 pointer-events-none' : ''} ${isMenuOpen ? 'z-20' : 'z-0'}`}>
         <div className="flex items-start justify-between gap-2">
           <p className={`text-sm font-semibold leading-snug min-w-0 flex-1 ${
             isCompleted ? 'text-[var(--muted)] line-through' : 'text-[var(--ink)]'
@@ -99,12 +99,12 @@ function TaskItem({ data }: { data: any }) {
           </div>
         </div>
         
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="relative flex items-center gap-2 flex-wrap">
           <div className="relative">
             <button 
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors hover:bg-[var(--surface-2)] border border-[var(--line)]/70 min-h-9"
+              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors hover:bg-[var(--surface-2)] border border-[var(--line)]/70 min-h-9 bg-white"
             >
               {data.task.status === 'TODO' && <><Circle className="h-3.5 w-3.5 text-[var(--faint)]" /><span className="text-[var(--muted)]">To Do</span></>}
               {data.task.status === 'IN_PROGRESS' && <><PlayCircle className="h-3.5 w-3.5 text-[var(--accent)]" /><span className="text-[var(--accent)]">In Progress</span></>}

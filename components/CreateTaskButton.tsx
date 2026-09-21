@@ -3,7 +3,7 @@
 import { Plus } from 'lucide-react';
 import { useState, useEffect, useTransition } from 'react';
 import { createTask } from '@/app/actions';
-import { loadFormOptions } from '@/components/formOptions';
+import { loadFormOptions, peekFormOptions, prefetchFormOptions } from '@/components/formOptions';
 import { ModalPortal } from '@/components/ModalPortal';
 
 export function CreateTaskButton({
@@ -17,14 +17,23 @@ export function CreateTaskButton({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  useEffect(() => {
+    prefetchFormOptions();
+  }, []);
+
+  const open = () => setIsOpen(true);
+  const warm = () => prefetchFormOptions();
+
   if (fab) {
     return (
       <>
         <button
           type="button"
-          onClick={() => setIsOpen(true)}
+          onClick={open}
+          onPointerEnter={warm}
+          onFocus={warm}
           aria-label="Add task"
-          className="sm:hidden fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-lg shadow-blue-600/35 active:scale-95 transition-transform"
+          className="md:hidden fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-lg shadow-blue-600/35 active:scale-95 transition-transform touch-manipulation"
         >
           <Plus className="h-6 w-6" strokeWidth={2.5} />
         </button>
@@ -38,8 +47,10 @@ export function CreateTaskButton({
       <>
         <button
           type="button"
-          onClick={() => setIsOpen(true)}
-          className="w-full rounded-lg border border-[var(--line)] bg-[var(--surface-2)] px-3 py-2 text-left text-sm font-semibold text-[var(--ink)]/70 hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
+          onClick={open}
+          onPointerEnter={warm}
+          onFocus={warm}
+          className="w-full min-h-11 rounded-lg border border-[var(--line)] bg-[var(--surface-2)] px-3 py-2.5 text-left text-sm font-semibold text-[var(--ink)]/70 hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors touch-manipulation"
         >
           + Task
         </button>
@@ -50,9 +61,11 @@ export function CreateTaskButton({
 
   return (
     <>
-      <button 
+      <button
         type="button"
-        onClick={() => setIsOpen(true)}
+        onClick={open}
+        onPointerEnter={warm}
+        onFocus={warm}
         className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/25 hover:bg-blue-700 active:scale-[0.98] transition-all"
       >
         <Plus className="h-4 w-4" strokeWidth={2.5} />
@@ -90,14 +103,15 @@ function FormSkeleton() {
 }
 
 function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaultDate?: string }) {
+  const cached = peekFormOptions();
   const [isPending, startTransition] = useTransition();
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [topics, setTopics] = useState<any[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
-  
+  const [loading, setLoading] = useState(!cached);
+  const [categories, setCategories] = useState(cached?.categories ?? []);
+  const [topics, setTopics] = useState(cached?.topics ?? []);
+  const [projects, setProjects] = useState(cached?.projects ?? []);
+
   const [title, setTitle] = useState('');
-  const [categoryId, setCategoryId] = useState('');
+  const [categoryId, setCategoryId] = useState(cached?.categories[0]?.id ?? '');
   const [topicId, setTopicId] = useState('');
   const [projectId, setProjectId] = useState('');
   const [plannedDate, setPlannedDate] = useState(
@@ -105,6 +119,7 @@ function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaul
   );
 
   useEffect(() => {
+    if (cached) return;
     let cancelled = false;
     loadFormOptions().then(({ categories: cats, topics: tops, projects: projs }) => {
       if (cancelled) return;
@@ -115,7 +130,7 @@ function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaul
       setLoading(false);
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [cached]);
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -153,7 +168,7 @@ function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaul
         >
           <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-slate-200 sm:hidden" />
           <h3 className="mb-5 sm:mb-6 text-xl font-bold text-slate-800 tracking-tight">Create New Task</h3>
-          
+
           {loading ? (
             <FormSkeleton />
           ) : (
@@ -223,7 +238,7 @@ function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaul
                 </select>
               </div>
             )}
-            
+
             <div className="mt-6 flex gap-3 pt-2">
               <button
                 type="button"

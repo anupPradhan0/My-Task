@@ -1,4 +1,4 @@
-import { getTasks } from './actions';
+import { getTasks } from '@/app/actions';
 import { CheckCircle2, Flame, Target } from 'lucide-react';
 import { TaskList } from '@/components/TaskList';
 import { CreateTaskButton } from '@/components/CreateTaskButton';
@@ -42,7 +42,7 @@ export default async function Dashboard() {
     : 0;
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <div className="flex items-start justify-between gap-3 anim-rise">
         <div className="min-w-0 flex-1">
           <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-[var(--faint)] mb-1.5 sm:mb-2">
@@ -57,7 +57,7 @@ export default async function Dashboard() {
               : `${completedToday} of ${tasksToday.length} done · ${progress}%`}
           </p>
         </div>
-        <div className="hidden sm:block shrink-0">
+        <div className="hidden md:block shrink-0">
           <CreateTaskButton />
         </div>
       </div>

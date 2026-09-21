@@ -52,7 +52,7 @@ export function TaskCheckItem({
   return (
     <>
       <li
-        className={`group flex items-start gap-2 rounded-lg px-1 py-1.5 sm:px-1.5 -mx-0.5 transition-colors hover:bg-[var(--surface-2)] ${
+        className={`group flex items-start gap-1.5 sm:gap-2 rounded-lg px-0.5 py-1 sm:px-1.5 sm:py-1.5 -mx-0.5 transition-colors hover:bg-[var(--surface-2)] ${
           isPending ? 'opacity-50 pointer-events-none' : ''
         }`}
       >
@@ -61,16 +61,20 @@ export function TaskCheckItem({
           onClick={toggle}
           disabled={isPending}
           aria-label={done ? 'Mark incomplete' : 'Mark complete'}
-          className={`mt-0.5 flex h-5 w-5 sm:h-[18px] sm:w-[18px] shrink-0 items-center justify-center rounded-[4px] border-2 transition-colors ${
-            done
-              ? 'border-[var(--accent)] bg-[var(--accent)] text-white'
-              : 'border-slate-400 bg-white hover:border-[var(--accent)]'
-          }`}
+          className="flex h-11 w-11 sm:h-[18px] sm:w-[18px] shrink-0 items-center justify-center -ml-2 sm:ml-0 sm:mt-0.5 touch-manipulation"
         >
-          {done ? <Check className="h-3 w-3" strokeWidth={3} /> : null}
+          <span
+            className={`flex h-5 w-5 sm:h-[18px] sm:w-[18px] items-center justify-center rounded-[4px] border-2 transition-colors ${
+              done
+                ? 'border-[var(--accent)] bg-[var(--accent)] text-white'
+                : 'border-slate-400 bg-white'
+            }`}
+          >
+            {done ? <Check className="h-3 w-3" strokeWidth={3} /> : null}
+          </span>
         </button>
 
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 pt-2.5 sm:pt-0">
           <p className={`text-[13px] sm:text-sm leading-snug break-words ${done ? 'text-slate-400 line-through' : 'text-[var(--ink)]'}`}>
             <span className="font-medium">{data.task.title}</span>
             {tag ? (
@@ -86,11 +90,11 @@ export function TaskCheckItem({
           ) : null}
         </div>
 
-        <div className="flex shrink-0 items-center gap-0.5 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100 transition-opacity">
+        <div className="flex shrink-0 items-center gap-0 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100 transition-opacity pt-0.5 sm:pt-0">
           <button
             type="button"
             onClick={() => setIsEditOpen(true)}
-            className="rounded-lg p-2 text-[var(--faint)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
+            className="rounded-lg p-2.5 sm:p-2 text-[var(--faint)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors touch-manipulation"
             title="Edit task"
             aria-label="Edit task"
           >
@@ -100,7 +104,7 @@ export function TaskCheckItem({
             type="button"
             onClick={handleDelete}
             disabled={isPending}
-            className="rounded-lg p-2 text-[var(--faint)] hover:bg-red-50 hover:text-red-500 transition-colors"
+            className="rounded-lg p-2.5 sm:p-2 text-[var(--faint)] hover:bg-red-50 hover:text-red-500 transition-colors touch-manipulation"
             title="Delete task"
             aria-label="Delete task"
           >

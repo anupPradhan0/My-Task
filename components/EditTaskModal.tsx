@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { editTask } from '@/app/actions';
-import { loadFormOptions } from '@/components/formOptions';
+import { loadFormOptions, peekFormOptions } from '@/components/formOptions';
 import { ModalPortal } from '@/components/ModalPortal';
 
 function FormSkeleton() {
@@ -31,11 +31,12 @@ function FormSkeleton() {
 }
 
 export function EditTaskModal({ data, onClose }: { data: any; onClose: () => void }) {
+  const cached = peekFormOptions();
   const [isPending, startTransition] = useTransition();
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [topics, setTopics] = useState<any[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(!cached);
+  const [categories, setCategories] = useState(cached?.categories ?? []);
+  const [topics, setTopics] = useState(cached?.topics ?? []);
+  const [projects, setProjects] = useState(cached?.projects ?? []);
 
   const [title, setTitle] = useState(data.task.title);
   const [categoryId, setCategoryId] = useState(data.task.categoryId || '');
@@ -46,6 +47,7 @@ export function EditTaskModal({ data, onClose }: { data: any; onClose: () => voi
   );
 
   useEffect(() => {
+    if (cached) return;
     let cancelled = false;
     loadFormOptions().then(({ categories: cats, topics: tops, projects: projs }) => {
       if (cancelled) return;
@@ -55,7 +57,7 @@ export function EditTaskModal({ data, onClose }: { data: any; onClose: () => voi
       setLoading(false);
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [cached]);
 
   useEffect(() => {
     const prev = document.body.style.overflow;

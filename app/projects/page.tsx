@@ -18,19 +18,19 @@ export default async function ProjectsPage() {
   const maxCompleted = Math.max(0, ...stats.map(s => s.completed));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <div className="anim-rise">
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--faint)] mb-2">
           Portfolio
         </p>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--ink)]">Projects</h1>
+        <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-[var(--ink)]">Projects</h1>
         <p className="text-sm text-[var(--muted)] mt-1">
           Progress across active and archived workstreams.
         </p>
       </div>
 
       {stats.length === 0 ? (
-        <div className="surface anim-rise rounded-2xl p-12 text-center shadow-sm">
+        <div className="surface anim-rise rounded-2xl p-8 sm:p-12 text-center shadow-sm">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)]">
             <FolderKanban className="h-6 w-6" />
           </div>
@@ -38,14 +38,14 @@ export default async function ProjectsPage() {
           <p className="text-sm text-[var(--muted)] mt-1">Seed or add projects to track them here.</p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 stagger">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 stagger">
           {stats.map(p => {
             const isTopProject = p.completed > 0 && p.completed === maxCompleted;
             
             return (
               <div
                 key={p.id}
-                className={`relative surface anim-rise rounded-2xl p-5 shadow-sm shadow-slate-900/5 transition-transform duration-200 hover:-translate-y-0.5 ${
+                className={`relative surface anim-rise rounded-2xl p-4 sm:p-5 shadow-sm shadow-slate-900/5 transition-transform duration-200 sm:hover:-translate-y-0.5 ${
                   !p.isActive ? 'opacity-70' : ''
                 } ${isTopProject ? 'ring-2 ring-[var(--accent)]/30' : ''}`}
               >
@@ -58,7 +58,7 @@ export default async function ProjectsPage() {
                   </div>
                 )}
                 <div className="flex items-start justify-between gap-3 mb-3">
-                  <h2 className="text-lg font-bold text-[var(--ink)] leading-snug">{p.name}</h2>
+                  <h2 className="text-base sm:text-lg font-bold text-[var(--ink)] leading-snug">{p.name}</h2>
                   <span className={`shrink-0 text-[11px] px-2 py-1 rounded-md font-semibold ${
                     p.isActive
                       ? 'bg-[var(--ok-soft)] text-[var(--ok)]'

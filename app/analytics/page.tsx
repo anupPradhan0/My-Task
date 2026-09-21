@@ -19,20 +19,20 @@ export default async function Analytics() {
   const maxCategoryCompleted = Math.max(0, ...Object.values(byCategory).map(v => v.completed));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <div className="anim-rise">
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--faint)] mb-2">
           Insights
         </p>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--ink)]">Analytics</h1>
+        <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-[var(--ink)]">Analytics</h1>
         <p className="text-sm text-[var(--muted)] mt-1">
           How your completed work breaks down across categories.
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="surface anim-rise rounded-2xl p-6 shadow-sm shadow-slate-900/5">
-          <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--muted)] mb-5">
+      <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
+        <div className="surface anim-rise rounded-2xl p-4 sm:p-6 shadow-sm shadow-slate-900/5">
+          <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--muted)] mb-4 sm:mb-5">
             By category
           </h2>
           <div className="space-y-5">
@@ -72,7 +72,7 @@ export default async function Analytics() {
           </div>
         </div>
 
-        <div className="surface anim-rise rounded-2xl p-6 shadow-sm shadow-slate-900/5 flex flex-col items-center justify-center text-center min-h-[260px]" style={{ animationDelay: '0.08s' }}>
+        <div className="surface anim-rise rounded-2xl p-5 sm:p-6 shadow-sm shadow-slate-900/5 flex flex-col items-center justify-center text-center min-h-[200px] sm:min-h-[260px]" style={{ animationDelay: '0.08s' }}>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)] mb-3">
             Completion rate
           </p>

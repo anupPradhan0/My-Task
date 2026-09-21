@@ -31,7 +31,10 @@ body {
     radial-gradient(900px 500px at 100% 0%, #e8f4ef 0%, transparent 50%),
     linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 40%, var(--bg2) 100%);
   min-height: 100dvh;
+  overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 @keyframes rise {
@@ -65,4 +68,13 @@ body {
 
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
 }

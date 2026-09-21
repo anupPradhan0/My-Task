@@ -79,7 +79,7 @@ function TaskItem({ data }: { data: any }) {
             <button
               type="button"
               onClick={() => setIsEditOpen(true)}
-              className="text-[var(--faint)] hover:text-[var(--accent)] hover:bg-[var(--accent-soft)] rounded-lg p-2 transition-colors"
+              className="text-[var(--faint)] hover:text-[var(--accent)] hover:bg-[var(--accent-soft)] rounded-lg p-2.5 sm:p-2 transition-colors touch-manipulation"
               title="Edit task"
               aria-label="Edit task"
             >
@@ -89,7 +89,7 @@ function TaskItem({ data }: { data: any }) {
               type="button"
               onClick={handleDelete}
               disabled={isPending}
-              className="text-[var(--faint)] hover:text-red-500 hover:bg-red-50 rounded-lg p-2 transition-colors"
+              className="text-[var(--faint)] hover:text-red-500 hover:bg-red-50 rounded-lg p-2.5 sm:p-2 transition-colors touch-manipulation"
               title="Delete task"
               aria-label="Delete task"
             >
@@ -103,7 +103,7 @@ function TaskItem({ data }: { data: any }) {
             <button 
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors hover:bg-[var(--surface-2)] border border-[var(--line)]/70 min-h-9 bg-white"
+              className="flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors hover:bg-[var(--surface-2)] border border-[var(--line)]/70 min-h-11 bg-white touch-manipulation"
             >
               {data.task.status === 'TODO' && <><Circle className="h-3.5 w-3.5 text-[var(--faint)]" /><span className="text-[var(--muted)]">To Do</span></>}
               {data.task.status === 'IN_PROGRESS' && <><PlayCircle className="h-3.5 w-3.5 text-[var(--accent)]" /><span className="text-[var(--accent)]">In Progress</span></>}

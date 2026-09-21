@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { AppSidebar, MobileHeader, MobileNav } from '@/components/Navigation';
+import { PrefetchFormOptions } from '@/components/PrefetchFormOptions';
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -34,13 +35,14 @@ export default function RootLayout({
 
           <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
             <MobileHeader />
-            <main className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain p-3 sm:p-4 md:p-8 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-8">
-              <div className="mx-auto w-full max-w-6xl anim-soft">{children}</div>
+            <main className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain px-3 pt-3 sm:px-4 sm:pt-4 md:p-8 pb-[calc(6.25rem+env(safe-area-inset-bottom,0px))] md:pb-8">
+              <div className="mx-auto w-full max-w-6xl">{children}</div>
             </main>
           </div>
 
           <MobileNav />
         </div>
+        <PrefetchFormOptions />
       </body>
     </html>
   );

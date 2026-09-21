@@ -77,7 +77,7 @@ export default async function Planner() {
       </div>
 
       {months.length === 0 ? (
-        <div className="surface anim-rise rounded-2xl p-12 text-center shadow-sm">
+        <div className="surface anim-rise rounded-2xl p-8 sm:p-12 text-center shadow-sm">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)]">
             <CalendarDays className="h-6 w-6" />
           </div>

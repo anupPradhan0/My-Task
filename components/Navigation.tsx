@@ -20,6 +20,14 @@ const desktopLabels: Record<string, string> = {
   Projects: 'Projects',
 };
 
+const pageTitles: Record<string, string> = {
+  '/': 'Dashboard',
+  '/tasks': 'Tasks',
+  '/planner': 'Planner',
+  '/analytics': 'Analytics',
+  '/projects': 'Projects',
+};
+
 function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`flex items-center gap-2.5 font-bold tracking-tight text-[var(--ink)] ${compact ? 'text-base' : 'text-sm'}`}>
@@ -33,6 +41,11 @@ function Brand({ compact = false }: { compact?: boolean }) {
 
 function isActivePath(pathname: string | null, href: string) {
   return pathname === href || (href !== '/' && !!pathname?.startsWith(href));
+}
+
+function titleForPath(pathname: string | null) {
+  if (!pathname) return 'FocusTrack';
+  return pageTitles[pathname] ?? 'FocusTrack';
 }
 
 export function AppSidebar() {
@@ -50,7 +63,7 @@ export function AppSidebar() {
             <Link
               key={item.name}
               href={item.href}
-              className={`group flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 ${
+              className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                 active
                   ? 'bg-[var(--ink)] text-white shadow-sm'
                   : 'text-[var(--muted)] hover:bg-white/80 hover:text-[var(--ink)]'
@@ -70,9 +83,12 @@ export function AppSidebar() {
 }
 
 export function MobileHeader() {
+  const pathname = usePathname();
+
   return (
-    <header className="flex h-14 w-full shrink-0 items-center border-b border-[var(--line)]/70 bg-white/70 px-4 backdrop-blur-md md:hidden">
+    <header className="flex min-h-14 w-full shrink-0 items-center justify-between gap-3 border-b border-[var(--line)]/70 bg-white/80 px-4 backdrop-blur-md md:hidden pt-[env(safe-area-inset-top,0px)]">
       <Brand compact />
+      <span className="text-sm font-semibold text-[var(--muted)] truncate">{titleForPath(pathname)}</span>
     </header>
   );
 }
@@ -81,14 +97,14 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 flex h-[calc(3.75rem+env(safe-area-inset-bottom,0px))] w-full border-t border-[var(--line)]/80 bg-white/90 backdrop-blur-md md:hidden pb-safe">
+    <nav className="fixed inset-x-0 bottom-0 z-50 flex h-[calc(3.75rem+env(safe-area-inset-bottom,0px))] w-full border-t border-[var(--line)]/80 bg-white/95 backdrop-blur-md md:hidden pb-safe">
       {navigation.map((item) => {
         const active = isActivePath(pathname, item.href);
         return (
           <Link
             key={item.name}
             href={item.href}
-            className={`relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 pt-1.5 pb-1 transition-colors ${
+            className={`relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-0.5 pt-1.5 pb-1 transition-colors touch-manipulation ${
               active ? 'text-[var(--accent)]' : 'text-[var(--faint)]'
             }`}
           >

@@ -3,7 +3,7 @@
 import { db } from '@/db';
 import { categories, topics, projects, tasks, taskTimeEntries } from '@/db/schema';
 import { eq, and, gte, lte, desc, asc, sum, sql } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 
 // --- Fetchers ---
 
@@ -19,15 +19,19 @@ export async function getProjects() {
   return await db.select().from(projects).where(eq(projects.isActive, true));
 }
 
-// one round-trip for create/edit modals instead of 3
-export async function getTaskFormOptions() {
-  const [cats, tops, projs] = await Promise.all([
-    db.select().from(categories),
-    db.select().from(topics),
-    db.select().from(projects).where(eq(projects.isActive, true)),
-  ]);
-  return { categories: cats, topics: tops, projects: projs };
-}
+// one round-trip for create/edit modals; cached so open isn't waiting on Postgres
+export const getTaskFormOptions = unstable_cache(
+  async () => {
+    const [cats, tops, projs] = await Promise.all([
+      db.select().from(categories),
+      db.select().from(topics),
+      db.select().from(projects).where(eq(projects.isActive, true)),
+    ]);
+    return { categories: cats, topics: tops, projects: projs };
+  },
+  ['task-form-options'],
+  { revalidate: 300, tags: ['task-form-options'] }
+);
 
 export async function getAllProjects() {
   return await db.select().from(projects);
@@ -135,10 +139,12 @@ export async function addTimeEntry(taskId: string, durationMinutes: number, trac
 
 export async function createProject(data: { name: string; description?: string }) {
   await db.insert(projects).values({ name: data.name, description: data.description });
+  revalidateTag('task-form-options', 'max');
   revalidatePath('/projects');
 }
 
 export async function toggleProjectActive(projectId: string, isActive: boolean) {
   await db.update(projects).set({ isActive, updatedAt: new Date() }).where(eq(projects.id, projectId));
+  revalidateTag('task-form-options', 'max');
   revalidatePath('/projects');
 }

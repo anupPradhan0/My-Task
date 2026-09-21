@@ -59,7 +59,7 @@ export function AddTimeModal({ taskId, taskTitle, onClose }: { taskId: string; t
                   type="number"
                   min="1"
                   required
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   placeholder="e.g. 30"
                   value={minutes}
                   onChange={(e) => setMinutes(e.target.value)}
@@ -73,14 +73,14 @@ export function AddTimeModal({ taskId, taskTitle, onClose }: { taskId: string; t
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                className="flex-1 min-h-11 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors touch-manipulation"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPending}
-                className="flex-[2] rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20 disabled:opacity-50 transition-all"
+                className="flex-[2] min-h-11 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20 disabled:opacity-50 transition-all touch-manipulation"
               >
                 {isPending ? 'Saving...' : 'Save Entry'}
               </button>

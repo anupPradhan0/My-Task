@@ -1,5 +1,44 @@
 # Todo MCP Server
 
+Two ways to run the same CRUD tools:
+
+1. **Vercel (recommended with this app)** — Next.js route at `/mcp` via `mcp-handler`
+2. **Docker** — standalone Streamable HTTP server in `mcp/` (optional)
+
+## Vercel
+
+Push to `main` as usual. After deploy, the MCP endpoint is:
+
+`https://task-two-pi-52.vercel.app/mcp`
+
+In Vercel → Project → Settings → Environment Variables, set:
+
+- `DATABASE_URL` (same Neon URL as the app)
+- `MCP_API_KEY` (optional but recommended — shared secret for AI clients)
+
+Cursor config:
+
+```json
+{
+  "mcpServers": {
+    "todo": {
+      "url": "https://task-two-pi-52.vercel.app/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_MCP_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Omit `headers` if `MCP_API_KEY` is not set.
+
+Code: `app/mcp/route.ts` + `lib/mcp/tools.ts`
+
+---
+
+## Docker (optional)
+
 Streamable HTTP MCP server that gives an AI full CRUD access to this app's
 Postgres data (tasks, projects, categories, topics, time entries).
 

@@ -10,8 +10,8 @@ services:
     environment:
       HOST: "0.0.0.0"
       PORT: "3100"
-      # Comma-separated Host header values clients will use (include Docker hostname if needed)
-      MCP_ALLOWED_HOSTS: "${MCP_ALLOWED_HOSTS:-localhost,127.0.0.1,mcp}"
+      # Leave unset / * / all = allow any Host. Or set e.g. mcp.example.com,localhost
+      MCP_ALLOWED_HOSTS: "${MCP_ALLOWED_HOSTS:-*}"
       MCP_API_KEY: "${MCP_API_KEY:-}"
       # If Postgres runs on the host machine, use host.docker.internal (Linux needs extra_hosts)
       # DATABASE_URL is loaded from .env — override here if the container must use a different host

@@ -8,17 +8,19 @@ import { createTodoMcpServer } from './server.js';
 const PORT = Number(process.env.PORT ?? 3100);
 const HOST = process.env.HOST ?? '0.0.0.0';
 const API_KEY = process.env.MCP_API_KEY;
-const ALLOWED_HOSTS = (process.env.MCP_ALLOWED_HOSTS ?? 'localhost,127.0.0.1')
-  .split(',')
-  .map((h) => h.trim())
-  .filter(Boolean);
+// Omit allowedHosts → any Host header accepted. Set MCP_ALLOWED_HOSTS=a,b to restrict.
+const rawHosts = process.env.MCP_ALLOWED_HOSTS?.trim();
+const allowedHosts =
+  !rawHosts || rawHosts === '*' || rawHosts.toLowerCase() === 'all'
+    ? undefined
+    : rawHosts.split(',').map((h) => h.trim()).filter(Boolean);
 
 const handler = createMcpHandler(() => createTodoMcpServer());
 const node = toNodeHandler(handler);
 
 const app = createMcpExpressApp({
   host: HOST,
-  allowedHosts: ALLOWED_HOSTS,
+  ...(allowedHosts ? { allowedHosts } : {}),
 });
 
 function requireApiKey(req: Request, res: Response, next: NextFunction) {

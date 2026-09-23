@@ -68,4 +68,4 @@ Omit `headers` if `MCP_API_KEY` is unset. Set the same value as in `.env`.
 | `PORT` | `3100` | Listen port |
 | `HOST` | `0.0.0.0` | Bind address |
 | `MCP_API_KEY` | unset | If set, require `Authorization: Bearer …` |
-| `MCP_ALLOWED_HOSTS` | `localhost,127.0.0.1` | Allowed `Host` headers (DNS-rebinding guard) |
+| `MCP_ALLOWED_HOSTS` | `*` (all hosts) | Hostnames allowed in `Host` header; `*` / `all` / unset = allow any |

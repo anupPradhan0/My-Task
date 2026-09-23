@@ -1,0 +1,32 @@
+services:
+  mcp:
+    build:
+      context: .
+      dockerfile: mcp/Dockerfile
+    ports:
+      - "3100:3100"
+    env_file:
+      - .env
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "3100"
+      # Comma-separated Host header values clients will use (include Docker hostname if needed)
+      MCP_ALLOWED_HOSTS: "${MCP_ALLOWED_HOSTS:-localhost,127.0.0.1,mcp}"
+      MCP_API_KEY: "${MCP_API_KEY:-}"
+      # If Postgres runs on the host machine, use host.docker.internal (Linux needs extra_hosts)
+      # DATABASE_URL is loaded from .env — override here if the container must use a different host
+      DATABASE_URL: "${DATABASE_URL}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3100/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3

@@ -11,8 +11,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // No password configured → leave site open (local/dev). Set SITE_PASSWORD on Vercel.
+  // On Vercel, require SITE_PASSWORD. Locally without it, stay open for easy dev.
   if (!sitePassword) {
+    if (process.env.VERCEL) {
+      if (pathname === '/login') return NextResponse.next();
+      return NextResponse.redirect(new URL('/login?error=config', request.url));
+    }
     return NextResponse.next();
   }
 

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How FocusTrack MCP Works</title>
+  <style>
+    :root {
+      --bg: #f7f4ef;
+      --ink: #1a1a1a;
+      --muted: #5c5c5c;
+      --card: #fffdf9;
+      --line: #d9d2c5;
+      --accent: #0f6b5c;
+      --accent-soft: #e6f3f0;
+      --warn: #8a4b12;
+      --warn-bg: #fff3e6;
+      --code-bg: #1e2430;
+      --code-ink: #e8eef7;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse 80% 50% at 10% -10%, #e8f0ea 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 100% 0%, #f0e8df 0%, transparent 50%),
+        var(--bg);
+      line-height: 1.65;
+    }
+
+    .wrap {
+      max-width: 46rem;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      line-height: 1.2;
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 1.1rem;
+      margin: 0 0 2rem;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      margin: 2.5rem 0 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--line);
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      margin: 1.5rem 0 0.5rem;
+    }
+
+    p, li { font-size: 1.02rem; }
+
+    a { color: var(--accent); }
+
+    .callout {
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      padding: 0.9rem 1rem;
+      margin: 1.25rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .warn {
+      background: var(--warn-bg);
+      border-left: 4px solid var(--warn);
+      padding: 0.9rem 1rem;
+      margin: 1.25rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .flow {
+      display: grid;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+
+    .step {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.85rem;
+      align-items: start;
+    }
+
+    .num {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .arrow {
+      text-align: center;
+      color: var(--muted);
+      font-size: 1.4rem;
+      line-height: 1;
+      margin: -0.2rem 0;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 1rem 1.1rem;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.88em;
+      background: #ece7dd;
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+      font-size: inherit;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.7rem 0.85rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      background: #efe9df;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .diagram {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.4;
+      color: #2a2a2a;
+    }
+
+    footer {
+      margin-top: 3rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>How the FocusTrack MCP server works</h1>
+    <p class="lede">
+      Plain-language guide to what was built, where it lives, and how an AI connects to create / edit / delete your tasks.
+    </p>
+
+    <div class="callout">
+      <strong>One-line summary:</strong>
+      MCP is a small API on your Vercel app. An AI (Cursor, Claude, etc.) calls tools like
+      <code>create_task</code> over HTTP. Those tools write to the same Neon Postgres database your website uses.
+    </div>
+
+    <h2>1. What is MCP?</h2>
+    <p>
+      <strong>MCP</strong> = Model Context Protocol. It is a standard way for AI apps to use
+      <em>tools</em> (functions) on a server you control.
+    </p>
+    <ul>
+      <li>Your website is for <strong>humans</strong> (buttons, pages).</li>
+      <li>Your MCP endpoint is for <strong>AIs</strong> (JSON tool calls).</li>
+    </ul>
+    <p>
+      Opening <code>/api/mcp</code> in a browser looks empty or odd — that is normal.
+      It is not a webpage; it is an API the AI speaks to.
+    </p>
+
+    <h2>2. Big picture flow</h2>
+    <div class="diagram">You (or Cursor AI)
+        │
+        │  HTTP POST  +  optional Bearer token
+        │  "please call create_task with these fields"
+        ▼
+https://task-two-pi-52.vercel.app/api/mcp
+        │
+        │  Next.js route  →  mcp-handler  →  tool code
+        ▼
+lib/mcp/tools.ts  (create_task, list_tasks, …)
+        │
+        │  Drizzle ORM
+        ▼
+Neon Postgres  (same DATABASE_URL as the FocusTrack UI)
+        │
+        ▼
+Website at https://task-two-pi-52.vercel.app/
+shows the updated tasks</div>
+
+    <div class="flow">
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <strong>AI decides it needs a tool</strong>
+          <span>Example: “Add a task for tomorrow under Projects.”</span>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <strong>AI calls your MCP URL</strong>
+          <span><code>POST https://task-two-pi-52.vercel.app/api/mcp</code> with a tool name + arguments.</span>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <div class="num">3</div>
+        <div>
+          <strong>Vercel runs the route</strong>
+          <span><code>app/api/mcp/route.ts</code> → <code>lib/mcp/handler.ts</code> → registers tools from <code>lib/mcp/tools.ts</code>.</span>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <div class="num">4</div>
+        <div>
+          <strong>Tool talks to the database</strong>
+          <span>Same Neon DB as the Next.js app. Insert / update / delete rows.</span>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <div class="num">5</div>
+        <div>
+          <strong>Result goes back to the AI</strong>
+          <span>Usually JSON text (the created row, the list, an error, etc.). You refresh the site and see it.</span>
+        </div>
+      </div>
+    </div>
+
+    <h2>3. How it was created (two layers)</h2>
+
+    <h3>A. Docker MCP (first version)</h3>
+    <p>
+      Under <code>mcp/</code> there is a standalone Express server using the official MCP TypeScript SDK.
+      It listens on port <code>3100</code> and can run in Docker. Useful on your own VPS — <strong>not</strong> what Vercel runs.
+    </p>
+
+    <h3>B. Vercel MCP (what you use now)</h3>
+    <p>
+      Vercel does not run that Docker process. So the same tools were wired into the Next.js app with
+      Vercel’s <code>mcp-handler</code> package:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Job</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>lib/mcp/tools.ts</code></td>
+          <td>All CRUD tools (tasks, projects, categories, topics, time entries)</td>
+        </tr>
+        <tr>
+          <td><code>lib/mcp/handler.ts</code></td>
+          <td>Builds the MCP server + optional API key check</td>
+        </tr>
+        <tr>
+          <td><code>app/mcp/route.ts</code></td>
+          <td>Public URL: <code>/mcp</code></td>
+        </tr>
+        <tr>
+          <td><code>app/api/mcp/route.ts</code></td>
+          <td>Public URL: <code>/api/mcp</code> (what most AIs look for)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="warn">
+      Until those files were <strong>committed and pushed to <code>main</code></strong>, Vercel still returned 404.
+      Deploy succeeded after push — that is why the AI finally can connect.
+    </div>
+
+    <h2>4. How anyone connects (Cursor / other AI)</h2>
+    <p>The client needs:</p>
+    <ol>
+      <li>The <strong>MCP URL</strong> (Streamable HTTP)</li>
+      <li>Optional <strong>Bearer token</strong> if <code>MCP_API_KEY</code> is set on Vercel</li>
+    </ol>
+
+    <pre><code>{
+  "mcpServers": {
+    "todo": {
+      "url": "https://task-two-pi-52.vercel.app/api/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_MCP_API_KEY"
+      }
+    }
+  }
+}</code></pre>
+
+    <p>
+      Put that in Cursor MCP settings (or paste the URL + token to your AI host).
+      After connect, the AI can <em>list tools</em>, then call them.
+    </p>
+
+    <h2>5. Auth flow</h2>
+    <div class="flow">
+      <div class="step">
+        <div class="num">A</div>
+        <div>
+          <strong><code>MCP_API_KEY</code> set on Vercel</strong>
+          <span>Requests without <code>Authorization: Bearer …</code> get <code>401</code>. Matching key → tools allowed.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">B</div>
+        <div>
+          <strong>Key not set</strong>
+          <span>Endpoint is open (fine for quick tests, risky in public).</span>
+        </div>
+      </div>
+    </div>
+
+    <h2>6. Example tool call (what the wire looks like)</h2>
+    <p>Simplified idea of what the AI sends:</p>
+    <pre><code>POST /api/mcp
+Authorization: Bearer YOUR_MCP_API_KEY
+Content-Type: application/json
+Accept: application/json, text/event-stream
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "list_categories",
+    "arguments": {}
+  }
+}</code></pre>
+    <p>Server answers with tool result JSON (categories from your DB).</p>
+
+    <h2>7. Tools available</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Area</th>
+          <th>Tools</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Categories</td>
+          <td><code>list_categories</code>, <code>create_category</code>, <code>delete_category</code></td>
+        </tr>
+        <tr>
+          <td>Topics</td>
+          <td><code>list_topics</code>, <code>create_topic</code>, <code>delete_topic</code></td>
+        </tr>
+        <tr>
+          <td>Projects</td>
+          <td><code>list_projects</code>, <code>create_project</code>, <code>update_project</code>, <code>delete_project</code></td>
+        </tr>
+        <tr>
+          <td>Tasks</td>
+          <td><code>list_tasks</code>, <code>get_task</code>, <code>create_task</code>, <code>update_task</code>, <code>update_task_status</code>, <code>delete_task</code></td>
+        </tr>
+        <tr>
+          <td>Time</td>
+          <td><code>add_time_entry</code>, <code>list_time_entries</code>, <code>delete_time_entry</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>8. Deploy flow (what happens when you push)</h2>
+    <div class="flow">
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <strong>git push origin main</strong>
+          <span>GitHub receives the commit with <code>app/api/mcp</code> + <code>lib/mcp</code>.</span>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <strong>Vercel builds</strong>
+          <span><code>npm run build</code> → Next.js includes the <code>/mcp</code> and <code>/api/mcp</code> routes.</span>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <div class="num">3</div>
+        <div>
+          <strong>Live URLs</strong>
+          <span>Site: <code>/</code> · MCP: <code>/api/mcp</code> (and <code>/mcp</code>). Same project, same DB.</span>
+        </div>
+      </div>
+    </div>
+
+    <h2>9. Common confusion</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>What people try</th>
+          <th>What it actually is</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Open <code>/api/mcp</code> in Chrome</td>
+          <td>Not a dashboard — AI protocol endpoint</td>
+        </tr>
+        <tr>
+          <td>Expect Docker on Vercel</td>
+          <td>Vercel runs serverless route handlers, not your Docker container</td>
+        </tr>
+        <tr>
+          <td>404 before push</td>
+          <td>Code only existed locally until it was on <code>main</code></td>
+        </tr>
+        <tr>
+          <td>401 without token</td>
+          <td><code>MCP_API_KEY</code> is set — send <code>Authorization: Bearer …</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>10. Mental model</h2>
+    <pre><code>FocusTrack website  ──┐
+                      ├──► same Neon database
+FocusTrack MCP API  ──┘
+
+Humans use the website.
+AIs use the MCP API.
+Both change the same tasks.</code></pre>
+
+    <footer>
+      Open this file in any browser: <code>docs/mcp-explained.html</code><br />
+      Live MCP: <a href="https://task-two-pi-52.vercel.app/api/mcp">https://task-two-pi-52.vercel.app/api/mcp</a>
+    </footer>
+  </main>
+</body>
+</html>

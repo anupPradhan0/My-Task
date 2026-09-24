@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { AUTH_COOKIE, sessionMatches } from '@/lib/site-auth';
+import { AUTH_COOKIE, safeNextPath, sessionMatches } from '@/lib/site-auth';
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -20,17 +20,22 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const cookie = request.cookies.get(AUTH_COOKIE)?.value;
+  const authed = await sessionMatches(cookie, sitePassword);
+
   if (pathname === '/login') {
+    if (authed) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
     return NextResponse.next();
   }
 
-  const cookie = request.cookies.get(AUTH_COOKIE)?.value;
-  if (await sessionMatches(cookie, sitePassword)) {
+  if (authed) {
     return NextResponse.next();
   }
 
   const login = new URL('/login', request.url);
-  login.searchParams.set('next', pathname);
+  login.searchParams.set('next', safeNextPath(pathname));
   return NextResponse.redirect(login);
 }
 

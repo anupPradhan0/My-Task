@@ -117,6 +117,7 @@ export async function updateTaskStatus(taskId: string, status: string) {
 }
 
 export async function deleteTask(taskId: string) {
+  await db.delete(taskTimeEntries).where(eq(taskTimeEntries.taskId, taskId));
   await db.delete(tasks).where(eq(tasks.id, taskId));
   revalidatePath('/');
   revalidatePath('/tasks');

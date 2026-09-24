@@ -47,7 +47,7 @@ export function WeeklyBoard({ weekLabel, columns, tasksByKey }: WeeklyBoardProps
       </div>
 
       <div
-        className="grid grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4 anim-rise"
+        className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 anim-rise"
         style={{ animationDelay: '0.06s' }}
       >
         {columns.map((col) => {
@@ -82,15 +82,15 @@ function DayColumnView({
   isToday: boolean;
 }) {
   const empty = tasks.length === 0;
-  // Today + Weekly Task get full row; other days stay 2-up
+  // Today + Weekly Task span full row from sm up; phones are always 1 column
   const wide = isToday || date === null;
 
   return (
     <div
       ref={ref}
-      className={`flex flex-col rounded-2xl border bg-white p-2.5 sm:p-3.5 shadow-sm shadow-slate-900/5 ${
+      className={`flex min-w-0 flex-col rounded-2xl border bg-white p-3 sm:p-3.5 shadow-sm shadow-slate-900/5 ${
         empty ? 'min-h-0' : 'min-h-[120px] sm:min-h-[140px]'
-      } ${wide ? 'col-span-2 xl:col-span-2' : 'col-span-1'} ${
+      } ${wide ? 'sm:col-span-2' : ''} ${
         isToday
           ? 'border-[var(--accent)]/40 ring-1 ring-[var(--accent)]/20'
           : 'border-[var(--line)]'

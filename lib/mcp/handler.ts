@@ -1,7 +1,7 @@
 import type { AuthInfo } from '@modelcontextprotocol/server';
 import { createMcpHandler, withMcpAuth } from 'mcp-handler';
 import { registerTools } from '@/lib/mcp/tools';
-import { safeEqual } from '@/lib/site-auth';
+import { hashPassword, safeEqual } from '@/lib/site-auth';
 
 const mcpHandler = createMcpHandler((server) => {
   registerTools(server);

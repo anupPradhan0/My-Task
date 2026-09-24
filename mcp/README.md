@@ -9,7 +9,7 @@ Two ways to run the same CRUD tools:
 
 Push to `main` as usual. After deploy, the MCP endpoint is:
 
-`https://task-two-pi-52.vercel.app/mcp`
+`https://YOUR-APP.vercel.app/mcp`
 
 In Vercel → Project → Settings → Environment Variables, set:
 
@@ -22,7 +22,7 @@ Cursor config:
 {
   "mcpServers": {
     "todo": {
-      "url": "https://task-two-pi-52.vercel.app/mcp",
+      "url": "https://YOUR-APP.vercel.app/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_MCP_API_KEY"
       }

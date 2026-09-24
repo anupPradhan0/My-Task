@@ -238,7 +238,7 @@
         │  HTTP POST  +  optional Bearer token
         │  "please call create_task with these fields"
         ▼
-https://task-two-pi-52.vercel.app/api/mcp
+https://YOUR-APP.vercel.app/api/mcp
         │
         │  Next.js route  →  mcp-handler  →  tool code
         ▼
@@ -249,7 +249,7 @@ lib/mcp/tools.ts  (create_task, list_tasks, …)
 Neon Postgres  (same DATABASE_URL as the FocusTrack UI)
         │
         ▼
-Website at https://task-two-pi-52.vercel.app/
+Website at https://YOUR-APP.vercel.app/
 shows the updated tasks</div>
 
     <div class="flow">
@@ -265,7 +265,7 @@ shows the updated tasks</div>
         <div class="num">2</div>
         <div>
           <strong>AI calls your MCP URL</strong>
-          <span><code>POST https://task-two-pi-52.vercel.app/api/mcp</code> with a tool name + arguments.</span>
+          <span><code>POST https://YOUR-APP.vercel.app/api/mcp</code> with a tool name + arguments.</span>
         </div>
       </div>
       <div class="arrow">↓</div>
@@ -349,7 +349,7 @@ shows the updated tasks</div>
     <pre><code>{
   "mcpServers": {
     "todo": {
-      "url": "https://task-two-pi-52.vercel.app/api/mcp",
+      "url": "https://YOUR-APP.vercel.app/api/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_MCP_API_KEY"
       }
@@ -496,7 +496,7 @@ Both change the same tasks.</code></pre>
 
     <footer>
       Open this file in any browser: <code>docs/mcp-explained.html</code><br />
-      Live MCP: <a href="https://task-two-pi-52.vercel.app/api/mcp">https://task-two-pi-52.vercel.app/api/mcp</a>
+      Live MCP: <a href="https://YOUR-APP.vercel.app/api/mcp">https://YOUR-APP.vercel.app/api/mcp</a>
     </footer>
   </main>
 </body>

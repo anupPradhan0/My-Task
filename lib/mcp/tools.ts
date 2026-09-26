@@ -1,5 +1,6 @@
 import { and, desc, eq, sql } from 'drizzle-orm';
 import type { McpServer } from '@modelcontextprotocol/server';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
 import { db } from '@/db';
 import { categories, topics, projects, tasks, taskTimeEntries } from '@/db/schema';
@@ -17,6 +18,19 @@ function err(message: string) {
     isError: true as const,
     content: [{ type: 'text' as const, text: message }],
   };
+}
+
+/** Match app/actions.ts so MCP writes refresh the same pages as UI writes. */
+function revalidateApp() {
+  revalidatePath('/');
+  revalidatePath('/tasks');
+  revalidatePath('/planner');
+  revalidatePath('/projects');
+  revalidatePath('/analytics');
+}
+
+function revalidateFormOptions() {
+  revalidateTag('task-form-options', 'max');
 }
 
 export function registerTools(server: McpServer) {
@@ -86,6 +100,7 @@ export function registerTools(server: McpServer) {
     },
     async ({ name, categoryId }) => {
       const [row] = await db.insert(topics).values({ name, categoryId }).returning();
+      revalidateFormOptions();
       return text(row);
     }
   );
@@ -98,6 +113,7 @@ export function registerTools(server: McpServer) {
     },
     async ({ id }) => {
       const [row] = await db.delete(topics).where(eq(topics.id, id)).returning();
+      if (row) revalidateFormOptions();
       return row ? text(row) : err(`Topic not found: ${id}`);
     }
   );
@@ -131,6 +147,8 @@ export function registerTools(server: McpServer) {
     },
     async ({ name, description }) => {
       const [row] = await db.insert(projects).values({ name, description }).returning();
+      revalidateFormOptions();
+      revalidatePath('/projects');
       return text(row);
     }
   );
@@ -157,6 +175,10 @@ export function registerTools(server: McpServer) {
         })
         .where(eq(projects.id, id))
         .returning();
+      if (row) {
+        revalidateFormOptions();
+        revalidatePath('/projects');
+      }
       return row ? text(row) : err(`Project not found: ${id}`);
     }
   );
@@ -170,6 +192,10 @@ export function registerTools(server: McpServer) {
     async ({ id }) => {
       await db.update(tasks).set({ projectId: null }).where(eq(tasks.projectId, id));
       const [row] = await db.delete(projects).where(eq(projects.id, id)).returning();
+      if (row) {
+        revalidateFormOptions();
+        revalidateApp();
+      }
       return row ? text(row) : err(`Project not found: ${id}`);
     }
   );
@@ -279,6 +305,7 @@ export function registerTools(server: McpServer) {
           completedAt: status === 'COMPLETED' ? new Date() : null,
         })
         .returning();
+      revalidateApp();
       return text(row);
     }
   );
@@ -311,6 +338,7 @@ export function registerTools(server: McpServer) {
         })
         .where(eq(tasks.id, id))
         .returning();
+      if (row) revalidateApp();
       return row ? text(row) : err(`Task not found: ${id}`);
     }
   );
@@ -334,6 +362,7 @@ export function registerTools(server: McpServer) {
         })
         .where(eq(tasks.id, id))
         .returning();
+      if (row) revalidateApp();
       return row ? text(row) : err(`Task not found: ${id}`);
     }
   );
@@ -347,6 +376,7 @@ export function registerTools(server: McpServer) {
     async ({ id }) => {
       await db.delete(taskTimeEntries).where(eq(taskTimeEntries.taskId, id));
       const [row] = await db.delete(tasks).where(eq(tasks.id, id)).returning();
+      if (row) revalidateApp();
       return row ? text(row) : err(`Task not found: ${id}`);
     }
   );
@@ -368,6 +398,8 @@ export function registerTools(server: McpServer) {
         .insert(taskTimeEntries)
         .values({ taskId, durationMinutes, trackedDate })
         .returning();
+      revalidatePath('/');
+      revalidatePath('/tasks');
       return text(row);
     }
   );
@@ -396,6 +428,10 @@ export function registerTools(server: McpServer) {
     },
     async ({ id }) => {
       const [row] = await db.delete(taskTimeEntries).where(eq(taskTimeEntries.id, id)).returning();
+      if (row) {
+        revalidatePath('/');
+        revalidatePath('/tasks');
+      }
       return row ? text(row) : err(`Time entry not found: ${id}`);
     }
   );

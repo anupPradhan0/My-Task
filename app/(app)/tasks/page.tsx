@@ -52,7 +52,7 @@ export default async function TasksPage() {
       label: `${label} ${ordinal(weekDays[i].getDate())}`,
       date: weekDates[i] as string | null,
     })),
-    // unfinished from before this week (no + Task — pick a day instead)
+    // whole-week tasks + unfinished carry-over from before this week
     { key: 'weekly', label: 'Weekly Task', date: null },
   ];
 
@@ -63,7 +63,7 @@ export default async function TasksPage() {
   for (const t of allTasks) {
     const planned = String(t.task.plannedDate).slice(0, 10);
     if (planned >= weekStart && planned <= weekEnd) {
-      tasksByKey[planned].push(t);
+      tasksByKey[t.task.isWeekly ? 'weekly' : planned].push(t);
       continue;
     }
     // Weekly Task = before this week; keep ones completed this week so they stay crossed out
@@ -79,7 +79,7 @@ export default async function TasksPage() {
 
   return (
     <div>
-      <WeeklyBoard weekLabel={weekLabel} columns={columns} tasksByKey={tasksByKey} />
+      <WeeklyBoard weekLabel={weekLabel} weekStart={weekStart} columns={columns} tasksByKey={tasksByKey} />
       <CreateTaskButton fab />
     </div>
   );

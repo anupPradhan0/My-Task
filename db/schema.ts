@@ -32,6 +32,7 @@ export const tasks = pgTable('tasks', {
   projectId: uuid('project_id').references(() => projects.id),
   status: varchar('status', { length: 50 }).notNull().default('TODO'), // TODO, IN_PROGRESS, COMPLETED
   plannedDate: date('planned_date').notNull(),
+  isWeekly: boolean('is_weekly').default(false).notNull(), // plannedDate = Monday of that week
   completedAt: timestamp('completed_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

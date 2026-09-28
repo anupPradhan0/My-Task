@@ -66,6 +66,7 @@ export async function createTask(data: {
   topicId?: string;
   projectId?: string;
   plannedDate: string;
+  isWeekly?: boolean;
 }) {
   await db.insert(tasks).values({
     title: data.title,
@@ -74,6 +75,7 @@ export async function createTask(data: {
     topicId: data.topicId || undefined,
     projectId: data.projectId || undefined,
     plannedDate: data.plannedDate,
+    isWeekly: data.isWeekly ?? false,
   });
   revalidatePath('/');
   revalidatePath('/tasks');

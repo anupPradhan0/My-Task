@@ -13,6 +13,7 @@ type DayColumn = {
 
 type WeeklyBoardProps = {
   weekLabel: string;
+  weekStart: string;
   columns: DayColumn[];
   tasksByKey: Record<string, CheckTask[]>;
 };
@@ -26,7 +27,7 @@ function todayYmd() {
   ].join('-');
 }
 
-export function WeeklyBoard({ weekLabel, columns, tasksByKey }: WeeklyBoardProps) {
+export function WeeklyBoard({ weekLabel, weekStart, columns, tasksByKey }: WeeklyBoardProps) {
   const today = todayYmd();
   const todayRef = useRef<HTMLDivElement>(null);
 
@@ -58,6 +59,7 @@ export function WeeklyBoard({ weekLabel, columns, tasksByKey }: WeeklyBoardProps
               ref={isToday ? todayRef : undefined}
               label={col.label}
               date={col.date}
+              weekStart={weekStart}
               tasks={tasksByKey[col.key] ?? []}
               isToday={isToday}
             />
@@ -72,12 +74,14 @@ function DayColumnView({
   ref,
   label,
   date,
+  weekStart,
   tasks,
   isToday,
 }: {
   ref?: React.Ref<HTMLDivElement>;
   label: string;
   date: string | null;
+  weekStart: string;
   tasks: CheckTask[];
   isToday: boolean;
 }) {
@@ -114,11 +118,9 @@ function DayColumnView({
           <TaskCheckItem key={t.task.id} data={t} />
         ))}
       </ul>
-      {date ? (
-        <div className="mt-2 pt-0.5">
-          <CreateTaskButton variant="column" defaultDate={date} />
-        </div>
-      ) : null}
+      <div className="mt-2 pt-0.5">
+        <CreateTaskButton variant="column" defaultDate={date ?? weekStart} weekly={date === null} />
+      </div>
     </div>
   );
 }

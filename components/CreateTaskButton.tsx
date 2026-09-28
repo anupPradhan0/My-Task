@@ -10,10 +10,12 @@ export function CreateTaskButton({
   fab = false,
   variant = 'default',
   defaultDate,
+  weekly = false,
 }: {
   fab?: boolean;
   variant?: 'default' | 'column';
   defaultDate?: string;
+  weekly?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -54,7 +56,7 @@ export function CreateTaskButton({
         >
           + Task
         </button>
-        {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} defaultDate={defaultDate} />}
+        {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} defaultDate={defaultDate} weekly={weekly} />}
       </>
     );
   }
@@ -102,7 +104,15 @@ function FormSkeleton() {
   );
 }
 
-function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaultDate?: string }) {
+function CreateTaskModal({
+  onClose,
+  defaultDate,
+  weekly = false,
+}: {
+  onClose: () => void;
+  defaultDate?: string;
+  weekly?: boolean;
+}) {
   const cached = peekFormOptions();
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(!cached);
@@ -151,6 +161,7 @@ function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaul
         topicId: showTopics && topicId ? topicId : undefined,
         projectId: showProjects && projectId ? projectId : undefined,
         plannedDate,
+        isWeekly: weekly,
       });
       onClose();
     });
@@ -167,7 +178,9 @@ function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaul
           onClick={(e) => e.stopPropagation()}
         >
           <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-slate-200 sm:hidden" />
-          <h3 className="mb-5 sm:mb-6 text-xl font-bold text-slate-800 tracking-tight">Create New Task</h3>
+          <h3 className="mb-5 sm:mb-6 text-xl font-bold text-slate-800 tracking-tight">
+            {weekly ? 'Create Weekly Task' : 'Create New Task'}
+          </h3>
 
           {loading ? (
             <FormSkeleton />
@@ -185,7 +198,7 @@ function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaul
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className={`grid grid-cols-1 gap-4 ${weekly ? '' : 'sm:grid-cols-2'}`}>
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-slate-700">Category</label>
                 <select
@@ -198,7 +211,7 @@ function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaul
                 </select>
               </div>
 
-              <div>
+              {!weekly && <div>
                 <label className="mb-1.5 block text-sm font-semibold text-slate-700">Date</label>
                 <input
                   type="date"
@@ -207,7 +220,7 @@ function CreateTaskModal({ onClose, defaultDate }: { onClose: () => void; defaul
                   value={plannedDate}
                   onChange={(e) => setPlannedDate(e.target.value)}
                 />
-              </div>
+              </div>}
             </div>
 
             {showTopics && (

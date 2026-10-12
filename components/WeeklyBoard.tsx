@@ -69,12 +69,14 @@ function todayYmd() {
 export function WeeklyBoard({ allTasks }: WeeklyBoardProps) {
   const [today, setToday] = useState<string | null>(null);
   useEffect(() => setToday(todayYmd()), []);
+  const [expandedDate, setExpandedDate] = useState<string | null>(null);
+  useEffect(() => setExpandedDate(today), [today]);
   const week = useMemo(() => today ? getLocalWeek(new Date(`${today}T12:00:00`)) : null, [today]);
-  const todayRef = useRef<HTMLDivElement>(null);
+  const expandedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    todayRef.current?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
-  }, [week]);
+    expandedRef.current?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  }, [week, expandedDate]);
 
   const tasksByKey = useMemo(() => {
     if (!week) return {};
@@ -118,15 +120,18 @@ export function WeeklyBoard({ allTasks }: WeeklyBoardProps) {
       >
         {week.columns.map((col) => {
           const isToday = col.date === today;
+          const isExpanded = col.date !== null && col.date === expandedDate;
           return (
             <DayColumnView
               key={col.key}
-              ref={isToday ? todayRef : undefined}
+              ref={isExpanded ? expandedRef : undefined}
               label={col.label}
               date={col.date}
               weekStart={week.weekStart}
               tasks={tasksByKey[col.key] ?? []}
               isToday={isToday}
+              isExpanded={isExpanded}
+              onSelect={col.date ? () => setExpandedDate(col.date) : undefined}
             />
           );
         })}
@@ -142,6 +147,8 @@ function DayColumnView({
   weekStart,
   tasks,
   isToday,
+  isExpanded,
+  onSelect,
 }: {
   ref?: React.Ref<HTMLDivElement>;
   label: string;
@@ -149,10 +156,12 @@ function DayColumnView({
   weekStart: string;
   tasks: CheckTask[];
   isToday: boolean;
+  isExpanded: boolean;
+  onSelect?: () => void;
 }) {
   const empty = tasks.length === 0;
-  // Today + Weekly Task span full row from sm up; phones are always 1 column
-  const wide = isToday || date === null;
+  // The selected day and Weekly Task span two columns on wider screens.
+  const wide = isExpanded || date === null;
 
   return (
     <div
@@ -160,20 +169,29 @@ function DayColumnView({
       className={`flex min-w-0 flex-col rounded-2xl border bg-white p-3 sm:p-3.5 shadow-sm shadow-slate-900/5 ${
         empty ? 'min-h-0' : 'min-h-[120px] sm:min-h-[140px]'
       } ${wide ? 'sm:col-span-2' : ''} ${
-        isToday
+        isExpanded || isToday
           ? 'border-[var(--accent)]/40 ring-1 ring-[var(--accent)]/20'
           : 'border-[var(--line)]'
       }`}
     >
       <div className="mb-2 flex items-center justify-between gap-1.5 border-b border-[var(--line)] pb-2">
-        <h2 className="text-xs sm:text-sm font-bold text-[var(--ink)] truncate leading-tight">
-          {label}
-          {isToday ? (
-            <span className="ml-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wide text-[var(--accent)]">
-              Today
-            </span>
-          ) : null}
-        </h2>
+        {onSelect ? (
+          <button
+            type="button"
+            onClick={onSelect}
+            aria-pressed={isExpanded}
+            className="min-w-0 truncate text-left text-xs sm:text-sm font-bold text-[var(--ink)] leading-tight"
+          >
+            {label}
+            {isToday ? (
+              <span className="ml-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wide text-[var(--accent)]">
+                Today
+              </span>
+            ) : null}
+          </button>
+        ) : (
+          <h2 className="text-xs sm:text-sm font-bold text-[var(--ink)] truncate leading-tight">{label}</h2>
+        )}
         <span className="tabular-nums text-[10px] sm:text-[11px] font-semibold text-[var(--muted)] bg-[var(--surface-2)] rounded-md px-1.5 py-0.5 shrink-0">
           {tasks.length}
         </span>

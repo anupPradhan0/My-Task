@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { CalendarDays } from 'lucide-react';
 import { CreateTaskButton } from '@/components/CreateTaskButton';
 import { TaskCheckItem, type CheckTask } from '@/components/TaskCheckItem';
@@ -66,11 +66,14 @@ function todayYmd() {
   ].join('-');
 }
 
+const subscribeToLocalDate = () => () => {};
+const getLocalDateSnapshot = () => todayYmd();
+const getServerDateSnapshot = () => null;
+
 export function WeeklyBoard({ allTasks }: WeeklyBoardProps) {
-  const [today, setToday] = useState<string | null>(null);
-  useEffect(() => setToday(todayYmd()), []);
-  const [expandedDate, setExpandedDate] = useState<string | null>(null);
-  useEffect(() => setExpandedDate(today), [today]);
+  const today = useSyncExternalStore(subscribeToLocalDate, getLocalDateSnapshot, getServerDateSnapshot);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const expandedDate = selectedDate ?? today;
   const week = useMemo(() => today ? getLocalWeek(new Date(`${today}T12:00:00`)) : null, [today]);
   const expandedRef = useRef<HTMLDivElement>(null);
 
@@ -131,7 +134,7 @@ export function WeeklyBoard({ allTasks }: WeeklyBoardProps) {
               tasks={tasksByKey[col.key] ?? []}
               isToday={isToday}
               isExpanded={isExpanded}
-              onSelect={col.date ? () => setExpandedDate(col.date) : undefined}
+              onSelect={col.date ? () => setSelectedDate(col.date) : undefined}
             />
           );
         })}
@@ -169,7 +172,7 @@ function DayColumnView({
       className={`flex min-w-0 flex-col rounded-2xl border bg-white p-3 sm:p-3.5 shadow-sm shadow-slate-900/5 ${
         empty ? 'min-h-0' : 'min-h-[120px] sm:min-h-[140px]'
       } ${wide ? 'sm:col-span-2' : ''} ${
-        isExpanded || isToday
+        isExpanded
           ? 'border-[var(--accent)]/40 ring-1 ring-[var(--accent)]/20'
           : 'border-[var(--line)]'
       }`}

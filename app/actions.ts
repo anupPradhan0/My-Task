@@ -2,7 +2,7 @@
 
 import { db } from '@/db';
 import { categories, topics, projects, tasks, taskTimeEntries } from '@/db/schema';
-import { eq, and, gte, lte, desc, asc, sum, sql } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 
 // --- Fetchers ---
@@ -40,7 +40,13 @@ export async function getAllProjects() {
 // --- Tasks ---
 
 export async function getTasks(filters?: { categoryId?: string; projectId?: string; status?: string; plannedDate?: string }) {
-  let query = db.select({
+  const conditions = [];
+  if (filters?.categoryId) conditions.push(eq(tasks.categoryId, filters.categoryId));
+  if (filters?.projectId) conditions.push(eq(tasks.projectId, filters.projectId));
+  if (filters?.status) conditions.push(eq(tasks.status, filters.status));
+  if (filters?.plannedDate) conditions.push(eq(tasks.plannedDate, filters.plannedDate));
+
+  const query = db.select({
     task: tasks,
     category: categories,
     topic: topics,
@@ -52,10 +58,9 @@ export async function getTasks(filters?: { categoryId?: string; projectId?: stri
   .leftJoin(topics, eq(tasks.topicId, topics.id))
   .leftJoin(projects, eq(tasks.projectId, projects.id))
   .leftJoin(taskTimeEntries, eq(tasks.id, taskTimeEntries.taskId))
+  .where(conditions.length ? and(...conditions) : undefined)
   .groupBy(tasks.id, categories.id, topics.id, projects.id);
 
-  // basic filtering in JS or SQL. For simplicity, we'll fetch all and filter in UI for small scale, 
-  // but let's add basic SQL filters.
   return await query;
 }
 

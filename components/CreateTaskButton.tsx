@@ -6,6 +6,15 @@ import { createTask } from '@/app/actions';
 import { loadFormOptions, peekFormOptions, prefetchFormOptions } from '@/components/formOptions';
 import { ModalPortal } from '@/components/ModalPortal';
 
+function localDateString() {
+  const now = new Date();
+  return [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
+  ].join('-');
+}
+
 export function CreateTaskButton({
   fab = false,
   variant = 'default',
@@ -125,7 +134,7 @@ function CreateTaskModal({
   const [topicId, setTopicId] = useState('');
   const [projectId, setProjectId] = useState('');
   const [plannedDate, setPlannedDate] = useState(
-    () => defaultDate || new Date().toISOString().split('T')[0]
+    () => defaultDate || localDateString()
   );
 
   useEffect(() => {
@@ -145,8 +154,15 @@ function CreateTaskModal({
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, []);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
 
   const selectedCategory = categories.find(c => c.id === categoryId);
   const showTopics = selectedCategory?.name === 'Fundamentals';
@@ -170,6 +186,9 @@ function CreateTaskModal({
   return (
     <ModalPortal>
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="create-task-title"
         className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-slate-900/55 p-0 sm:p-4"
         onClick={onClose}
       >
@@ -178,7 +197,7 @@ function CreateTaskModal({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-slate-200 sm:hidden" />
-          <h3 className="mb-5 sm:mb-6 text-xl font-bold text-slate-800 tracking-tight">
+          <h3 id="create-task-title" className="mb-5 sm:mb-6 text-xl font-bold text-slate-800 tracking-tight">
             {weekly ? 'Create Weekly Task' : 'Create New Task'}
           </h3>
 
@@ -187,8 +206,9 @@ function CreateTaskModal({
           ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-slate-700">Task Title</label>
+                <label htmlFor="create-task-title-input" className="mb-1.5 block text-sm font-semibold text-slate-700">Task Title</label>
               <input
+                id="create-task-title-input"
                 required
                 placeholder="What needs to be done?"
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
@@ -200,8 +220,9 @@ function CreateTaskModal({
 
             <div className={`grid grid-cols-1 gap-4 ${weekly ? '' : 'sm:grid-cols-2'}`}>
               <div>
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Category</label>
+                <label htmlFor="create-task-category" className="mb-1.5 block text-sm font-semibold text-slate-700">Category</label>
                 <select
+                  id="create-task-category"
                   required
                   className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all bg-white appearance-none"
                   value={categoryId}
@@ -212,8 +233,9 @@ function CreateTaskModal({
               </div>
 
               {!weekly && <div>
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Date</label>
+                <label htmlFor="create-task-date" className="mb-1.5 block text-sm font-semibold text-slate-700">Date</label>
                 <input
+                  id="create-task-date"
                   type="date"
                   required
                   className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
@@ -225,8 +247,9 @@ function CreateTaskModal({
 
             {showTopics && (
               <div>
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Topic</label>
+                <label htmlFor="create-task-topic" className="mb-1.5 block text-sm font-semibold text-slate-700">Topic</label>
                 <select
+                  id="create-task-topic"
                   className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all bg-white"
                   value={topicId}
                   onChange={(e) => setTopicId(e.target.value)}
@@ -239,8 +262,9 @@ function CreateTaskModal({
 
             {showProjects && (
               <div>
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Project</label>
+                <label htmlFor="create-task-project" className="mb-1.5 block text-sm font-semibold text-slate-700">Project</label>
                 <select
+                  id="create-task-project"
                   required
                   className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base sm:text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all bg-white"
                   value={projectId}

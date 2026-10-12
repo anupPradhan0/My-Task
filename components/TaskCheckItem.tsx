@@ -13,13 +13,14 @@ export type CheckTask = {
     plannedDate?: string;
     completedAt?: Date | string | null;
     isWeekly?: boolean;
+    description?: string | null;
     categoryId?: string;
     topicId?: string | null;
     projectId?: string | null;
   };
-  category?: { name: string } | null;
-  topic?: { name: string } | null;
-  project?: { name: string } | null;
+  category?: { id?: string; name: string } | null;
+  topic?: { id?: string; name: string } | null;
+  project?: { id?: string; name: string } | null;
 };
 
 function tagFor(t: CheckTask) {

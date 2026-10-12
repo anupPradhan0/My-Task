@@ -63,6 +63,7 @@ export function AppSidebar() {
             <Link
               key={item.name}
               href={item.href}
+              aria-current={active ? 'page' : undefined}
               className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                 active
                   ? 'bg-[var(--ink)] text-white shadow-sm'
@@ -104,6 +105,7 @@ export function MobileNav() {
           <Link
             key={item.name}
             href={item.href}
+            aria-current={active ? 'page' : undefined}
             className={`relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-0.5 pt-1.5 pb-1 transition-colors touch-manipulation ${
               active ? 'text-[var(--accent)]' : 'text-[var(--faint)]'
             }`}

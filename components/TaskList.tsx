@@ -3,11 +3,12 @@
 import { Trash2, Circle, PlayCircle, CheckCircle2, Pencil } from 'lucide-react';
 import { updateTaskStatus, deleteTask } from '@/app/actions';
 import { EditTaskModal } from '@/components/EditTaskModal';
+import type { CheckTask } from '@/components/TaskCheckItem';
 import { useTransition, useState } from 'react';
 
 type TaskListProps = {
   title: string;
-  tasks: any[];
+  tasks: CheckTask[];
   color: 'blue' | 'orange' | 'teal';
 };
 
@@ -43,7 +44,7 @@ export function TaskList({ title, tasks, color }: TaskListProps) {
   );
 }
 
-function TaskItem({ data }: { data: any }) {
+function TaskItem({ data }: { data: CheckTask }) {
   const [isPending, startTransition] = useTransition();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -58,6 +59,7 @@ function TaskItem({ data }: { data: any }) {
   };
 
   const handleDelete = () => {
+    if (!confirm('Delete this task?')) return;
     startTransition(() => {
       deleteTask(data.task.id);
     });
@@ -103,6 +105,9 @@ function TaskItem({ data }: { data: any }) {
             <button 
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-expanded={isMenuOpen}
+              aria-haspopup="menu"
+              aria-label={`Change status, currently ${data.task.status.replace('_', ' ').toLowerCase()}`}
               className="flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors hover:bg-[var(--surface-2)] border border-[var(--line)]/70 min-h-11 bg-white touch-manipulation"
             >
               {data.task.status === 'TODO' && <><Circle className="h-3.5 w-3.5 text-[var(--faint)]" /><span className="text-[var(--muted)]">To Do</span></>}
@@ -113,14 +118,14 @@ function TaskItem({ data }: { data: any }) {
             {isMenuOpen && (
               <>
                 <div className="fixed inset-0 z-[90]" onClick={() => setIsMenuOpen(false)} />
-                <div className="absolute left-0 top-full mt-1 w-44 rounded-xl border border-[var(--line)] bg-white p-1.5 shadow-lg z-[100]">
-                  <button type="button" onClick={() => setStatus('TODO')} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2.5 text-sm hover:bg-[var(--surface-2)] text-[var(--ink)]">
+                <div role="menu" className="absolute left-0 top-full mt-1 w-44 rounded-xl border border-[var(--line)] bg-white p-1.5 shadow-lg z-[100]">
+                  <button type="button" role="menuitem" onClick={() => setStatus('TODO')} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2.5 text-sm hover:bg-[var(--surface-2)] text-[var(--ink)]">
                     <Circle className="h-3.5 w-3.5 text-[var(--faint)]" /> To Do
                   </button>
-                  <button type="button" onClick={() => setStatus('IN_PROGRESS')} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2.5 text-sm hover:bg-[var(--surface-2)] text-[var(--accent)]">
+                  <button type="button" role="menuitem" onClick={() => setStatus('IN_PROGRESS')} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2.5 text-sm hover:bg-[var(--surface-2)] text-[var(--accent)]">
                     <PlayCircle className="h-3.5 w-3.5 text-[var(--accent)]" /> In Progress
                   </button>
-                  <button type="button" onClick={() => setStatus('COMPLETED')} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2.5 text-sm hover:bg-[var(--surface-2)] text-[var(--ok)]">
+                  <button type="button" role="menuitem" onClick={() => setStatus('COMPLETED')} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2.5 text-sm hover:bg-[var(--surface-2)] text-[var(--ok)]">
                     <CheckCircle2 className="h-3.5 w-3.5 text-[var(--ok)]" /> Done
                   </button>
                 </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays } from 'lucide-react';
 import { CreateTaskButton } from '@/components/CreateTaskButton';
 import { TaskCheckItem, type CheckTask } from '@/components/TaskCheckItem';
@@ -12,11 +12,50 @@ type DayColumn = {
 };
 
 type WeeklyBoardProps = {
-  weekLabel: string;
-  weekStart: string;
-  columns: DayColumn[];
-  tasksByKey: Record<string, CheckTask[]>;
+  allTasks: CheckTask[];
 };
+
+function ymd(d: Date) {
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, '0'),
+    String(d.getDate()).padStart(2, '0'),
+  ].join('-');
+}
+
+function ordinal(n: number) {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+const DAY_LABELS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
+
+function getLocalWeek(today: Date) {
+  const monday = new Date(today);
+  monday.setHours(12, 0, 0, 0);
+  const day = monday.getDay();
+  monday.setDate(monday.getDate() + (day === 0 ? -6 : 1 - day));
+  const weekDays = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d;
+  });
+  const weekDates = weekDays.map(ymd);
+  const sunday = weekDays[6];
+  const weekLabel = monday.getMonth() === sunday.getMonth()
+    ? `${monday.toLocaleDateString(undefined, { month: 'long' })} ${ordinal(monday.getDate())} to ${ordinal(sunday.getDate())}`
+    : `${monday.toLocaleDateString(undefined, { month: 'long' })} ${ordinal(monday.getDate())} to ${sunday.toLocaleDateString(undefined, { month: 'long' })} ${ordinal(sunday.getDate())}`;
+  const columns: DayColumn[] = [
+    ...DAY_LABELS.map((label, i) => ({
+      key: weekDates[i],
+      label: `${label} ${ordinal(weekDays[i].getDate())}`,
+      date: weekDates[i],
+    })),
+    { key: 'weekly', label: 'Weekly Task', date: null },
+  ];
+  return { today: ymd(today), weekStart: weekDates[0], weekEnd: weekDates[6], weekLabel, columns };
+}
 
 function todayYmd() {
   const d = new Date();
@@ -27,13 +66,39 @@ function todayYmd() {
   ].join('-');
 }
 
-export function WeeklyBoard({ weekLabel, weekStart, columns, tasksByKey }: WeeklyBoardProps) {
-  const today = todayYmd();
+export function WeeklyBoard({ allTasks }: WeeklyBoardProps) {
+  const [today, setToday] = useState<string | null>(null);
+  useEffect(() => setToday(todayYmd()), []);
+  const week = useMemo(() => today ? getLocalWeek(new Date(`${today}T12:00:00`)) : null, [today]);
   const todayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     todayRef.current?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
-  }, []);
+  }, [week]);
+
+  const tasksByKey = useMemo(() => {
+    if (!week) return {};
+    const grouped: Record<string, CheckTask[]> = Object.fromEntries(
+      week.columns.map((column) => [column.key, []])
+    );
+    for (const task of allTasks) {
+      const planned = String(task.task.plannedDate ?? '').slice(0, 10);
+      if (planned >= week.weekStart && planned <= week.weekEnd) {
+        grouped[task.task.isWeekly ? 'weekly' : planned]?.push(task);
+      } else if (planned < week.weekStart) {
+        if (task.task.status !== 'COMPLETED') {
+          grouped.weekly.push(task);
+        } else if (task.task.completedAt) {
+          const doneOn = ymd(new Date(task.task.completedAt));
+          if (doneOn >= week.weekStart) grouped.weekly.push(task);
+        }
+      }
+    }
+    return grouped;
+  }, [allTasks, week]);
+
+  // Avoid rendering a server-timezone week before the browser's local date is known.
+  if (!week) return <div className="min-h-[70vh]" aria-busy="true" />;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -42,7 +107,7 @@ export function WeeklyBoard({ weekLabel, weekStart, columns, tasksByKey }: Weekl
         <h1 className="text-lg sm:text-2xl font-extrabold tracking-tight text-[var(--ink)] leading-snug">
           Weekly To-do{' '}
           <span className="block sm:inline font-semibold text-[var(--muted)] text-sm sm:text-2xl mt-0.5 sm:mt-0">
-            @ {weekLabel}
+            @ {week.weekLabel}
           </span>
         </h1>
       </div>
@@ -51,7 +116,7 @@ export function WeeklyBoard({ weekLabel, weekStart, columns, tasksByKey }: Weekl
         className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 anim-rise"
         style={{ animationDelay: '0.06s' }}
       >
-        {columns.map((col) => {
+        {week.columns.map((col) => {
           const isToday = col.date === today;
           return (
             <DayColumnView
@@ -59,7 +124,7 @@ export function WeeklyBoard({ weekLabel, weekStart, columns, tasksByKey }: Weekl
               ref={isToday ? todayRef : undefined}
               label={col.label}
               date={col.date}
-              weekStart={weekStart}
+              weekStart={week.weekStart}
               tasks={tasksByKey[col.key] ?? []}
               isToday={isToday}
             />

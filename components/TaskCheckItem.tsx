@@ -11,6 +11,8 @@ export type CheckTask = {
     title: string;
     status: string;
     plannedDate?: string;
+    completedAt?: Date | string | null;
+    isWeekly?: boolean;
     categoryId?: string;
     topicId?: string | null;
     projectId?: string | null;

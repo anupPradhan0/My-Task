@@ -13,7 +13,7 @@ async function main() {
 
   const yuviz = allProjects.find(p => p.name === 'Yuviz')!;
   const pipeshub = allProjects.find(p => p.name === 'PipesHub')!;
-  const dograh = allProjects.find(p => p.name === 'Dograh')!;
+  const rukios = allProjects.find(p => p.name === 'RukiOS')!;
   const other = allProjects.find(p => p.name === 'other')!;
 
   const projectsCat = allCategories.find(c => c.name === 'Projects')!;
@@ -57,7 +57,7 @@ async function main() {
     { title: 'yuviz Pr 6', projectId: yuviz.id, categoryId: projectsCat.id, plannedDate: getDay(5), status: 'COMPLETED' },
 
     // Sunday
-    { title: 'KB vector Pr', projectId: dograh.id, categoryId: projectsCat.id, plannedDate: getDay(6), status: 'TODO' },
+    { title: 'KB vector Pr', projectId: rukios.id, categoryId: projectsCat.id, plannedDate: getDay(6), status: 'TODO' },
     { title: 'MCP Pr', projectId: pipeshub.id, categoryId: projectsCat.id, plannedDate: getDay(6), status: 'TODO' },
     { title: 'WorkFlow Pr', projectId: yuviz.id, categoryId: projectsCat.id, plannedDate: getDay(6), status: 'COMPLETED' },
     { title: 'Learn', categoryId: fundamentalsCat.id, plannedDate: getDay(6), status: 'COMPLETED' },

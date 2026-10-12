@@ -51,8 +51,7 @@ async function main() {
       description: 'PipesHub is an open-source platform for securely connecting enterprise knowledge to AI. Give AI agents trusted context and your team permission-aware search with verified citations across your business systems.' 
     },
     { 
-      name: 'Dograh', 
-      description: 'Open source voice AI platform. Self-hosted alternative to Vapi and Retell. On Prem, BYOK across Speech to Speech or LLM/STT/TTS, with a visual workflow builder, MCP native and telephony support.' 
+      name: 'RukiOS',
     },
     { 
       name: 'noburner', 

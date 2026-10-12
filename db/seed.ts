@@ -32,7 +32,7 @@ async function main() {
   await db.insert(projects).values([
     { name: 'Yuviz', description: 'Voice AI platform: STT -> LLM (tool-calling, RAG, transfer) -> TTS, over real SIP telephony or browser-based testing' },
     { name: 'PipesHub', description: 'PipesHub is an open-source platform for securely connecting enterprise knowledge to AI. Give AI agents trusted context and your team permission-aware search with verified citations across your business systems.' },
-    { name: 'Dograh', description: 'Open source voice AI platform. Self-hosted alternative to Vapi and Retell. On Prem, BYOK across Speech to Speech or LLM/STT/TTS, with a visual workflow builder, MCP native and telephony support.' },
+    { name: 'RukiOS' },
     { name: 'noburner', description: 'A temp email, like the temporary email detection project.' },
     { name: 'other', description: 'othere projects some temporey one adn all ok' }
   ]);

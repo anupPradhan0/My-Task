@@ -3,7 +3,7 @@
 import { db } from '@/db';
 import { categories, topics, projects, tasks, taskTimeEntries } from '@/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
+import { revalidatePath, updateTag, unstable_cache } from 'next/cache';
 
 // --- Fetchers ---
 
@@ -29,7 +29,7 @@ export const getTaskFormOptions = unstable_cache(
     ]);
     return { categories: cats, topics: tops, projects: projs };
   },
-  ['task-form-options'],
+  ['task-form-options', 'v2'],
   { revalidate: 300, tags: ['task-form-options'] }
 );
 
@@ -147,12 +147,18 @@ export async function addTimeEntry(taskId: string, durationMinutes: number, trac
 
 export async function createProject(data: { name: string; description?: string }) {
   await db.insert(projects).values({ name: data.name, description: data.description });
-  revalidateTag('task-form-options', 'max');
+  // Read-your-own-writes: next dropdown fetch must wait for fresh projects
+  updateTag('task-form-options');
   revalidatePath('/projects');
 }
 
 export async function toggleProjectActive(projectId: string, isActive: boolean) {
   await db.update(projects).set({ isActive, updatedAt: new Date() }).where(eq(projects.id, projectId));
-  revalidateTag('task-form-options', 'max');
+  updateTag('task-form-options');
   revalidatePath('/projects');
+}
+
+/** Bust form-options cache after out-of-band DB changes (seed/scripts). */
+export async function refreshTaskFormOptions() {
+  updateTag('task-form-options');
 }

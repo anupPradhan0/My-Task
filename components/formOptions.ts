@@ -10,7 +10,14 @@ export function peekFormOptions() {
   return resolved;
 }
 
-export function loadFormOptions() {
+/** Drop client cache so the next load hits the server (e.g. after a new project). */
+export function invalidateFormOptions() {
+  resolved = null;
+  inflight = null;
+}
+
+export function loadFormOptions(options?: { force?: boolean }) {
+  if (options?.force) invalidateFormOptions();
   if (resolved) return Promise.resolve(resolved);
   if (!inflight) {
     inflight = getTaskFormOptions()

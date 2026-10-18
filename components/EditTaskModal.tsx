@@ -48,9 +48,8 @@ export function EditTaskModal({ data, onClose }: { data: CheckTask; onClose: () 
   );
 
   useEffect(() => {
-    if (cached) return;
     let cancelled = false;
-    loadFormOptions().then(({ categories: cats, topics: tops, projects: projs }) => {
+    loadFormOptions({ force: true }).then(({ categories: cats, topics: tops, projects: projs }) => {
       if (cancelled) return;
       setCategories(cats);
       setTopics(tops);
@@ -58,7 +57,7 @@ export function EditTaskModal({ data, onClose }: { data: CheckTask; onClose: () 
       setLoading(false);
     });
     return () => { cancelled = true; };
-  }, [cached]);
+  }, []);
 
   useEffect(() => {
     const prev = document.body.style.overflow;

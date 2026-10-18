@@ -138,18 +138,18 @@ function CreateTaskModal({
   );
 
   useEffect(() => {
-    if (cached) return;
     let cancelled = false;
-    loadFormOptions().then(({ categories: cats, topics: tops, projects: projs }) => {
+    // Always re-fetch on open so newly added projects appear (don't stick to module cache)
+    loadFormOptions({ force: true }).then(({ categories: cats, topics: tops, projects: projs }) => {
       if (cancelled) return;
       setCategories(cats);
       setTopics(tops);
       setProjects(projs);
-      if (cats.length > 0) setCategoryId(cats[0].id);
+      setCategoryId((prev) => prev || cats[0]?.id || '');
       setLoading(false);
     });
     return () => { cancelled = true; };
-  }, [cached]);
+  }, []);
 
   useEffect(() => {
     const prev = document.body.style.overflow;

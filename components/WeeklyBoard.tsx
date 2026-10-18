@@ -194,8 +194,13 @@ function DayColumnView({
         </span>
       </div>
       <ul className={`flex flex-1 flex-col gap-0.5 ${empty ? '' : 'min-h-[2rem]'}`}>
-        {tasks.map((t) => (
-          <TaskCheckItem key={t.task.id} data={t} />
+        {tasks.map((t, i) => (
+          <TaskCheckItem
+            key={t.task.id}
+            data={t}
+            canMoveUp={i > 0}
+            canMoveDown={i < tasks.length - 1}
+          />
         ))}
       </ul>
       <div className="mt-2 pt-0.5">

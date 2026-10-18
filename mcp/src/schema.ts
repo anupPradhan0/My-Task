@@ -32,6 +32,8 @@ export const tasks = pgTable('tasks', {
   projectId: uuid('project_id').references(() => projects.id),
   status: varchar('status', { length: 50 }).notNull().default('TODO'), // TODO, IN_PROGRESS, COMPLETED
   plannedDate: date('planned_date').notNull(),
+  isWeekly: boolean('is_weekly').default(false).notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
   completedAt: timestamp('completed_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -43,6 +45,14 @@ export const taskTimeEntries = pgTable('task_time_entries', {
   durationMinutes: integer('duration_minutes').notNull(),
   trackedDate: date('tracked_date').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const notes = pgTable('notes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: varchar('title', { length: 500 }).notNull().default('Untitled'),
+  content: text('content').notNull().default(''),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 // Relations

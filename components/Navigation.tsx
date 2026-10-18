@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, CheckSquare, CalendarDays, BarChart3, FolderKanban } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, CalendarDays, BarChart3, FolderKanban, StickyNote } from 'lucide-react';
 
 const navigation = [
   { name: 'Home', href: '/', icon: LayoutDashboard },
   { name: 'Tasks', href: '/tasks', icon: CheckSquare },
   { name: 'Plan', href: '/planner', icon: CalendarDays },
+  { name: 'Notes', href: '/notes', icon: StickyNote },
   { name: 'Stats', href: '/analytics', icon: BarChart3 },
   { name: 'Projects', href: '/projects', icon: FolderKanban },
 ];
@@ -16,6 +17,7 @@ const desktopLabels: Record<string, string> = {
   Home: 'Dashboard',
   Tasks: 'Tasks',
   Plan: 'Planner',
+  Notes: 'Notes',
   Stats: 'Analytics',
   Projects: 'Projects',
 };
@@ -24,6 +26,7 @@ const pageTitles: Record<string, string> = {
   '/': 'Dashboard',
   '/tasks': 'Tasks',
   '/planner': 'Planner',
+  '/notes': 'Notes',
   '/analytics': 'Analytics',
   '/projects': 'Projects',
 };
@@ -114,7 +117,7 @@ export function MobileNav() {
               <span className="absolute top-0 h-0.5 w-8 rounded-full bg-[var(--accent)]" />
             )}
             <item.icon className="h-5 w-5 shrink-0" strokeWidth={active ? 2.25 : 1.75} />
-            <span className="max-w-full truncate text-[10px] font-semibold leading-none">{item.name}</span>
+            <span className="max-w-full truncate text-[9px] font-semibold leading-none">{item.name}</span>
           </Link>
         );
       })}

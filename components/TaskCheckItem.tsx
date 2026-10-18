@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Check, Pencil, Trash2 } from 'lucide-react';
-import { deleteTask, updateTaskStatus } from '@/app/actions';
+import { ArrowDown, ArrowUp, Check, Pencil, Trash2 } from 'lucide-react';
+import { deleteTask, moveTask, updateTaskStatus } from '@/app/actions';
 import { EditTaskModal } from '@/components/EditTaskModal';
 
 export type CheckTask = {
@@ -13,6 +13,8 @@ export type CheckTask = {
     plannedDate?: string;
     completedAt?: Date | string | null;
     isWeekly?: boolean;
+    sortOrder?: number;
+    createdAt?: Date | string;
     description?: string | null;
     categoryId?: string;
     topicId?: string | null;
@@ -30,9 +32,13 @@ function tagFor(t: CheckTask) {
 export function TaskCheckItem({
   data,
   showDate = false,
+  canMoveUp = false,
+  canMoveDown = false,
 }: {
   data: CheckTask;
   showDate?: boolean;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -49,6 +55,12 @@ export function TaskCheckItem({
     if (!confirm('Delete this task?')) return;
     startTransition(() => {
       deleteTask(data.task.id);
+    });
+  };
+
+  const handleMove = (direction: 'up' | 'down') => {
+    startTransition(() => {
+      moveTask(data.task.id, direction);
     });
   };
 
@@ -98,6 +110,30 @@ export function TaskCheckItem({
         </div>
 
         <div className="flex shrink-0 items-center sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100 transition-opacity">
+          {(canMoveUp || canMoveDown) && (
+            <div className="flex flex-col">
+              <button
+                type="button"
+                onClick={() => handleMove('up')}
+                disabled={isPending || !canMoveUp}
+                className="rounded-md p-1 text-[var(--faint)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] disabled:opacity-30 disabled:pointer-events-none touch-manipulation"
+                title="Move up"
+                aria-label="Move task up"
+              >
+                <ArrowUp className="h-3 w-3" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleMove('down')}
+                disabled={isPending || !canMoveDown}
+                className="rounded-md p-1 text-[var(--faint)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] disabled:opacity-30 disabled:pointer-events-none touch-manipulation"
+                title="Move down"
+                aria-label="Move task down"
+              >
+                <ArrowDown className="h-3 w-3" />
+              </button>
+            </div>
+          )}
           <button
             type="button"
             onClick={() => setIsEditOpen(true)}

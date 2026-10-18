@@ -267,6 +267,9 @@ export function registerTools(server: McpServer) {
       }),
     },
     async ({ title, description, categoryId, topicId, projectId, plannedDate, status }) => {
+      const [{ next }] = await db
+        .select({ next: sql<number>`COALESCE(MAX(${tasks.sortOrder}), 0) + 1`.mapWith(Number) })
+        .from(tasks);
       const [row] = await db
         .insert(tasks)
         .values({
@@ -277,6 +280,7 @@ export function registerTools(server: McpServer) {
           projectId,
           plannedDate,
           status,
+          sortOrder: next,
           completedAt: status === 'COMPLETED' ? new Date() : null,
         })
         .returning();

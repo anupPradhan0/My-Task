@@ -53,6 +53,9 @@ async function main() {
     { 
       name: 'RukiOS',
     },
+    {
+      name: 'OpenPing',
+    },
     { 
       name: 'noburner', 
       description: 'A temp email, like the temporary email detection project.' 

@@ -94,14 +94,13 @@ export async function editTask(taskId: string, data: {
   categoryId: string;
   topicId?: string;
   projectId?: string;
-  plannedDate: string;
 }) {
+  // plannedDate is fixed at create time — edit title/category/etc, never the date
   await db.update(tasks).set({
     title: data.title,
     categoryId: data.categoryId,
     topicId: data.topicId || undefined,
     projectId: data.projectId || undefined,
-    plannedDate: data.plannedDate,
     updatedAt: new Date(),
   }).where(eq(tasks.id, taskId));
   revalidatePath('/');

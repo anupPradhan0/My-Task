@@ -88,16 +88,10 @@ export function WeeklyBoard({ allTasks }: WeeklyBoardProps) {
     );
     for (const task of allTasks) {
       const planned = String(task.task.plannedDate ?? '').slice(0, 10);
-      if (planned >= week.weekStart && planned <= week.weekEnd) {
-        grouped[task.task.isWeekly ? 'weekly' : planned]?.push(task);
-      } else if (planned < week.weekStart) {
-        if (task.task.status !== 'COMPLETED') {
-          grouped.weekly.push(task);
-        } else if (task.task.completedAt) {
-          const doneOn = ymd(new Date(task.task.completedAt));
-          if (doneOn >= week.weekStart) grouped.weekly.push(task);
-        }
-      }
+      // Only this week's tasks. Incomplete past days do NOT roll into Weekly —
+      // Weekly is explicitly created tasks (isWeekly), not a catch-all backlog.
+      if (planned < week.weekStart || planned > week.weekEnd) continue;
+      grouped[task.task.isWeekly ? 'weekly' : planned]?.push(task);
     }
     return grouped;
   }, [allTasks, week]);

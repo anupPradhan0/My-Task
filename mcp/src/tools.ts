@@ -287,7 +287,8 @@ export function registerTools(server: McpServer) {
   server.registerTool(
     'update_task',
     {
-      description: 'Update task fields (partial). Use update_task_status for status-only changes.',
+      description:
+        'Update task fields (partial). Planned date is immutable — delete and recreate to change the date. Use update_task_status for status-only changes.',
       inputSchema: z.object({
         id: z.string().uuid(),
         title: z.string().min(1).optional(),
@@ -295,10 +296,9 @@ export function registerTools(server: McpServer) {
         categoryId: z.string().uuid().optional(),
         topicId: z.string().uuid().nullable().optional(),
         projectId: z.string().uuid().nullable().optional(),
-        plannedDate: z.string().optional().describe('YYYY-MM-DD'),
       }),
     },
-    async ({ id, title, description, categoryId, topicId, projectId, plannedDate }) => {
+    async ({ id, title, description, categoryId, topicId, projectId }) => {
       const [row] = await db
         .update(tasks)
         .set({
@@ -307,7 +307,6 @@ export function registerTools(server: McpServer) {
           ...(categoryId !== undefined ? { categoryId } : {}),
           ...(topicId !== undefined ? { topicId } : {}),
           ...(projectId !== undefined ? { projectId } : {}),
-          ...(plannedDate !== undefined ? { plannedDate } : {}),
           updatedAt: new Date(),
         })
         .where(eq(tasks.id, id))

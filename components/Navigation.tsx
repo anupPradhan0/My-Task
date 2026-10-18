@@ -90,9 +90,13 @@ export function MobileHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="flex min-h-14 w-full shrink-0 items-center justify-between gap-3 border-b border-[var(--line)]/70 bg-white/80 px-4 backdrop-blur-md md:hidden pt-[env(safe-area-inset-top,0px)]">
-      <Brand compact />
-      <span className="text-sm font-semibold text-[var(--muted)] truncate">{titleForPath(pathname)}</span>
+    <header className="flex min-h-14 w-full shrink-0 items-center justify-between gap-2 border-b border-[var(--line)]/70 bg-white/80 px-3 sm:px-4 backdrop-blur-md md:hidden pt-[env(safe-area-inset-top,0px)]">
+      <div className="min-w-0 truncate">
+        <Brand compact />
+      </div>
+      <span className="text-sm font-semibold text-[var(--muted)] truncate max-w-[45%] text-right">
+        {titleForPath(pathname)}
+      </span>
     </header>
   );
 }
@@ -101,7 +105,10 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 flex h-[calc(3.75rem+env(safe-area-inset-bottom,0px))] w-full border-t border-[var(--line)]/80 bg-white/95 backdrop-blur-md md:hidden pb-safe">
+    <nav
+      aria-label="Primary"
+      className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-6 h-[calc(3.9rem+env(safe-area-inset-bottom,0px))] w-full border-t border-[var(--line)]/80 bg-white/95 backdrop-blur-md md:hidden pb-safe"
+    >
       {navigation.map((item) => {
         const active = isActivePath(pathname, item.href);
         return (
@@ -109,15 +116,18 @@ export function MobileNav() {
             key={item.name}
             href={item.href}
             aria-current={active ? 'page' : undefined}
-            className={`relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-0.5 pt-1.5 pb-1 transition-colors touch-manipulation ${
+            aria-label={desktopLabels[item.name] ?? item.name}
+            className={`relative flex min-w-0 flex-col items-center justify-center gap-0.5 px-0.5 pt-1.5 pb-1 transition-colors touch-manipulation ${
               active ? 'text-[var(--accent)]' : 'text-[var(--faint)]'
             }`}
           >
             {active && (
-              <span className="absolute top-0 h-0.5 w-8 rounded-full bg-[var(--accent)]" />
+              <span className="absolute top-0 h-0.5 w-6 rounded-full bg-[var(--accent)]" />
             )}
-            <item.icon className="h-5 w-5 shrink-0" strokeWidth={active ? 2.25 : 1.75} />
-            <span className="max-w-full truncate text-[9px] font-semibold leading-none">{item.name}</span>
+            <item.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={active ? 2.25 : 1.75} />
+            <span className="max-w-full truncate text-[8px] font-semibold leading-none tracking-tight">
+              {item.name}
+            </span>
           </Link>
         );
       })}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { FilePlus2, StickyNote, Trash2 } from 'lucide-react';
+import { ArrowLeft, FilePlus2, StickyNote, Trash2 } from 'lucide-react';
 import { createNote, deleteNote, updateNote } from '@/app/actions';
 
 export type NoteRow = {
@@ -33,6 +33,10 @@ export function NotesApp({ initialNotes }: { initialNotes: NoteRow[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(initialNotes[0]?.id ?? null);
   const [title, setTitle] = useState(initialNotes[0]?.title ?? '');
   const [content, setContent] = useState(initialNotes[0]?.content ?? '');
+  // On phones: list vs editor. Desktop always shows both.
+  const [mobilePane, setMobilePane] = useState<'list' | 'editor'>(
+    initialNotes.length > 0 ? 'editor' : 'list'
+  );
   const [isPending, startTransition] = useTransition();
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -47,6 +51,12 @@ export function NotesApp({ initialNotes }: { initialNotes: NoteRow[] }) {
     }
   }, [initialNotes, selectedId]);
 
+  useEffect(() => {
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
+  }, []);
+
   const selectNote = (note: NoteRow) => {
     if (saveTimer.current) {
       clearTimeout(saveTimer.current);
@@ -56,6 +66,7 @@ export function NotesApp({ initialNotes }: { initialNotes: NoteRow[] }) {
     setTitle(note.title);
     setContent(note.content);
     setSaveState('idle');
+    setMobilePane('editor');
   };
 
   const persist = (id: string, nextTitle: string, nextContent: string) => {
@@ -87,6 +98,7 @@ export function NotesApp({ initialNotes }: { initialNotes: NoteRow[] }) {
       setTitle(row.title);
       setContent(row.content);
       setSaveState('idle');
+      setMobilePane('editor');
     });
   };
 
@@ -102,21 +114,25 @@ export function NotesApp({ initialNotes }: { initialNotes: NoteRow[] }) {
         setSelectedId(fallback?.id ?? null);
         setTitle(fallback?.title ?? '');
         setContent(fallback?.content ?? '');
+        setMobilePane(fallback ? 'editor' : 'list');
         return next;
       });
       setSaveState('idle');
     });
   };
 
+  const showListOnMobile = mobilePane === 'list';
+  const showEditorOnMobile = mobilePane === 'editor';
+
   return (
-    <div className="space-y-4 sm:space-y-5">
-      <div className="anim-rise flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--faint)] mb-2">
+    <div className="flex flex-col gap-3 sm:gap-5 min-h-0">
+      <div className="anim-rise flex items-start justify-between gap-2 sm:gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--faint)] mb-1.5 sm:mb-2">
             Scratchpad
           </p>
           <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-[var(--ink)]">Notes</h1>
-          <p className="text-sm text-[var(--muted)] mt-1">
+          <p className="text-sm text-[var(--muted)] mt-1 hidden sm:block">
             Simple notes — write, edit, and keep ideas in one place.
           </p>
         </div>
@@ -124,24 +140,37 @@ export function NotesApp({ initialNotes }: { initialNotes: NoteRow[] }) {
           type="button"
           onClick={handleCreate}
           disabled={isPending}
-          className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-[var(--ink)] px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.98] touch-manipulation"
+          aria-label="New note"
+          className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--ink)] h-11 w-11 sm:h-auto sm:w-auto sm:px-3.5 sm:py-2.5 text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.98] touch-manipulation"
         >
           <FilePlus2 className="h-4 w-4" />
-          New note
+          <span className="hidden sm:inline">New note</span>
         </button>
       </div>
 
-      <div className="anim-rise grid gap-3 md:grid-cols-[240px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)] md:min-h-[60vh]">
-        <aside className="surface rounded-2xl p-2 sm:p-2.5 shadow-sm flex flex-col min-h-[200px] md:min-h-0">
+      <div className="anim-rise grid gap-3 md:grid-cols-[240px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)] md:min-h-[min(70vh,720px)] md:flex-1">
+        {/* Note list — full screen on mobile when in list pane */}
+        <aside
+          className={`surface rounded-2xl p-2 sm:p-2.5 shadow-sm flex-col min-h-0 ${
+            showListOnMobile ? 'flex' : 'hidden'
+          } md:flex ${showListOnMobile ? 'min-h-[60vh]' : ''} md:min-h-0`}
+        >
           <div className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--faint)]">
             All notes ({notes.length})
           </div>
-          <div className="flex-1 overflow-y-auto scrollbar-thin space-y-1">
+          <div className="flex-1 overflow-y-auto overscroll-contain scrollbar-thin space-y-1 max-h-[min(70vh,560px)] md:max-h-none">
             {notes.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-2 px-3 py-10 text-center">
                 <StickyNote className="h-6 w-6 text-[var(--faint)]" />
                 <p className="text-sm font-medium text-[var(--muted)]">No notes yet</p>
-                <p className="text-xs text-[var(--faint)]">Create one to get started.</p>
+                <p className="text-xs text-[var(--faint)]">Tap + to create one.</p>
+                <button
+                  type="button"
+                  onClick={handleCreate}
+                  className="mt-2 rounded-xl bg-[var(--ink)] px-4 py-2.5 text-sm font-semibold text-white touch-manipulation md:hidden"
+                >
+                  New note
+                </button>
               </div>
             ) : (
               notes.map((note) => {
@@ -151,10 +180,10 @@ export function NotesApp({ initialNotes }: { initialNotes: NoteRow[] }) {
                     key={note.id}
                     type="button"
                     onClick={() => selectNote(note)}
-                    className={`w-full rounded-xl px-3 py-2.5 text-left transition-colors touch-manipulation ${
+                    className={`w-full rounded-xl px-3 py-3 sm:py-2.5 text-left transition-colors touch-manipulation ${
                       active
                         ? 'bg-[var(--ink)] text-white'
-                        : 'hover:bg-white/80 text-[var(--ink)]'
+                        : 'hover:bg-white/80 active:bg-white text-[var(--ink)]'
                     }`}
                   >
                     <p className={`truncate text-sm font-semibold ${active ? 'text-white' : ''}`}>
@@ -173,19 +202,41 @@ export function NotesApp({ initialNotes }: { initialNotes: NoteRow[] }) {
           </div>
         </aside>
 
-        <section className="surface rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col min-h-[360px]">
+        {/* Editor — full screen on mobile when in editor pane */}
+        <section
+          className={`surface rounded-2xl p-3.5 sm:p-5 shadow-sm flex-col min-h-0 ${
+            showEditorOnMobile ? 'flex' : 'hidden'
+          } md:flex min-h-[min(70vh,640px)] md:min-h-0`}
+        >
           {!selected ? (
-            <div className="flex flex-1 flex-col items-center justify-center text-center gap-2">
+            <div className="flex flex-1 flex-col items-center justify-center text-center gap-2 px-4">
               <StickyNote className="h-8 w-8 text-[var(--faint)]" />
               <p className="font-semibold text-[var(--ink)]">Pick a note or create one</p>
               <p className="text-sm text-[var(--muted)]">Your notes stay here — plain and simple.</p>
+              <button
+                type="button"
+                onClick={handleCreate}
+                className="mt-2 rounded-xl bg-[var(--ink)] px-4 py-2.5 text-sm font-semibold text-white touch-manipulation"
+              >
+                New note
+              </button>
             </div>
           ) : (
             <>
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <p className="text-xs font-medium text-[var(--faint)] tabular-nums">
-                  {saveState === 'saving' ? 'Saving…' : saveState === 'saved' ? 'Saved' : 'Ready'}
-                </p>
+              <div className="mb-2 sm:mb-3 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => setMobilePane('list')}
+                    className="md:hidden inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-[var(--muted)] hover:bg-[var(--surface-2)] touch-manipulation"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    Notes
+                  </button>
+                  <p className="text-xs font-medium text-[var(--faint)] tabular-nums truncate">
+                    {saveState === 'saving' ? 'Saving…' : saveState === 'saved' ? 'Saved' : 'Ready'}
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={handleDelete}
@@ -207,7 +258,7 @@ export function NotesApp({ initialNotes }: { initialNotes: NoteRow[] }) {
                   scheduleSave(next, content);
                 }}
                 placeholder="Untitled"
-                className="w-full bg-transparent text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--ink)] placeholder:text-[var(--faint)] focus:outline-none mb-3"
+                className="w-full bg-transparent text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--ink)] placeholder:text-[var(--faint)] focus:outline-none mb-2 sm:mb-3"
               />
               <textarea
                 value={content}
@@ -220,7 +271,7 @@ export function NotesApp({ initialNotes }: { initialNotes: NoteRow[] }) {
                   scheduleSave(title, next);
                 }}
                 placeholder="Start writing…"
-                className="min-h-[280px] flex-1 w-full resize-none bg-transparent text-base leading-relaxed text-[var(--ink)] placeholder:text-[var(--faint)] focus:outline-none"
+                className="min-h-[50vh] md:min-h-[280px] flex-1 w-full resize-none bg-transparent text-base leading-relaxed text-[var(--ink)] placeholder:text-[var(--faint)] focus:outline-none"
               />
             </>
           )}

@@ -109,35 +109,35 @@ export function TaskCheckItem({
           ) : null}
         </div>
 
-        <div className="flex shrink-0 items-center sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100 transition-opacity">
+        <div className="flex shrink-0 items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100 transition-opacity">
           {(canMoveUp || canMoveDown) && (
-            <div className="flex flex-col">
+            <div className="flex sm:flex-col">
               <button
                 type="button"
                 onClick={() => handleMove('up')}
                 disabled={isPending || !canMoveUp}
-                className="rounded-md p-1 text-[var(--faint)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] disabled:opacity-30 disabled:pointer-events-none touch-manipulation"
+                className="rounded-lg p-2 sm:p-1 text-[var(--faint)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] disabled:opacity-30 disabled:pointer-events-none touch-manipulation"
                 title="Move up"
                 aria-label="Move task up"
               >
-                <ArrowUp className="h-3 w-3" />
+                <ArrowUp className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
               </button>
               <button
                 type="button"
                 onClick={() => handleMove('down')}
                 disabled={isPending || !canMoveDown}
-                className="rounded-md p-1 text-[var(--faint)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] disabled:opacity-30 disabled:pointer-events-none touch-manipulation"
+                className="rounded-lg p-2 sm:p-1 text-[var(--faint)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] disabled:opacity-30 disabled:pointer-events-none touch-manipulation"
                 title="Move down"
                 aria-label="Move task down"
               >
-                <ArrowDown className="h-3 w-3" />
+                <ArrowDown className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
               </button>
             </div>
           )}
           <button
             type="button"
             onClick={() => setIsEditOpen(true)}
-            className="rounded-lg p-2 text-[var(--faint)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors touch-manipulation"
+            className="rounded-lg p-2.5 sm:p-2 text-[var(--faint)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors touch-manipulation"
             title="Edit task"
             aria-label="Edit task"
           >
@@ -147,7 +147,7 @@ export function TaskCheckItem({
             type="button"
             onClick={handleDelete}
             disabled={isPending}
-            className="rounded-lg p-2 text-[var(--faint)] hover:bg-red-50 hover:text-red-500 transition-colors touch-manipulation"
+            className="rounded-lg p-2.5 sm:p-2 text-[var(--faint)] hover:bg-red-50 hover:text-red-500 transition-colors touch-manipulation"
             title="Delete task"
             aria-label="Delete task"
           >

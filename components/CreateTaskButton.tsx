@@ -44,7 +44,7 @@ export function CreateTaskButton({
           onPointerEnter={warm}
           onFocus={warm}
           aria-label="Add task"
-          className="md:hidden fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-lg shadow-blue-600/35 active:scale-95 transition-transform touch-manipulation"
+          className="md:hidden fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-lg shadow-blue-600/35 active:scale-95 transition-transform touch-manipulation"
         >
           <Plus className="h-6 w-6" strokeWidth={2.5} />
         </button>

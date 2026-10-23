@@ -68,20 +68,20 @@ export function TaskCheckItem({
 
   return (
     <>
-      <li className={`grid min-w-0 grid-cols-[24px_minmax(0,1fr)_32px] items-start gap-x-3 gap-y-2 rounded-xl px-2 py-3.5 transition-colors hover:bg-[var(--surface-2)] sm:px-3 ${roomy ? 'sm:grid-cols-[24px_minmax(0,1fr)_76px_32px]' : ''} ${isPending ? 'pointer-events-none opacity-50' : ''}`}>
+      <li className={`grid min-w-0 grid-cols-[36px_minmax(0,1fr)_44px] items-start gap-x-2 gap-y-2 rounded-xl px-2 py-3.5 transition-colors hover:bg-[var(--surface-2)] sm:px-3 ${roomy ? 'sm:grid-cols-[36px_minmax(0,1fr)_76px_44px]' : ''} ${isPending ? 'pointer-events-none opacity-50' : ''}`}>
         <button
           type="button"
           onClick={toggle}
           disabled={isPending}
           aria-label={`${done ? 'Mark incomplete' : 'Mark complete'}: ${data.task.title}`}
-          className="flex h-8 w-7 items-center justify-start touch-manipulation"
+          className="flex h-11 w-9 items-center justify-start touch-manipulation"
         >
           <span className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-colors ${done ? 'border-[var(--accent)] bg-[var(--accent)] text-white' : 'border-slate-400 bg-white hover:border-[var(--accent)]'}`}>
             {done && <Check className="h-3 w-3" strokeWidth={3} aria-hidden="true" />}
           </span>
         </button>
 
-        <div className="min-w-0 pt-0.5">
+        <div className="min-w-0 pt-2">
           <p className={`text-sm font-medium leading-relaxed [overflow-wrap:anywhere] ${done ? 'text-slate-500 line-through decoration-slate-300' : 'text-[var(--ink)]'}`}>
             {data.task.title}
           </p>
@@ -98,7 +98,7 @@ export function TaskCheckItem({
             type="button"
             onClick={() => setIsEditOpen(true)}
             aria-label={`Edit ${data.task.title}`}
-            className="hidden min-h-8 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-[var(--muted)] hover:bg-white hover:text-[var(--accent)] sm:flex"
+            className="hidden min-h-11 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-[var(--muted)] hover:bg-white hover:text-[var(--accent)] sm:flex"
           >
             <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Edit
           </button>
@@ -110,27 +110,27 @@ export function TaskCheckItem({
           aria-label={`More actions for ${data.task.title}`}
           aria-expanded={isActionsOpen}
           aria-controls={isActionsOpen ? actionsId : undefined}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-white hover:text-[var(--ink)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+          className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 hover:bg-white hover:text-[var(--ink)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
         >
           <Ellipsis className="h-5 w-5" aria-hidden="true" />
         </button>
 
         {isActionsOpen && (
           <div id={actionsId} className="col-start-2 col-end-[-1] flex flex-wrap gap-1 rounded-lg border border-[var(--line)] bg-white p-1.5 shadow-sm" role="group" aria-label={`Actions for ${data.task.title}`}>
-            <button type="button" onClick={() => { setIsActionsOpen(false); setIsEditOpen(true); }} className="flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-[var(--ink)] hover:bg-[var(--surface-2)]">
+            <button type="button" onClick={() => { setIsActionsOpen(false); setIsEditOpen(true); }} className="flex min-h-11 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-[var(--ink)] hover:bg-[var(--surface-2)]">
               <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Edit
             </button>
             {(canMoveUp || canMoveDown) && (
               <>
-                <button type="button" onClick={() => handleMove('up')} disabled={!canMoveUp} className="flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-[var(--ink)] hover:bg-[var(--surface-2)] disabled:opacity-35">
+                <button type="button" onClick={() => handleMove('up')} disabled={!canMoveUp} className="flex min-h-11 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-[var(--ink)] hover:bg-[var(--surface-2)] disabled:opacity-35">
                   <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" /> Move up
                 </button>
-                <button type="button" onClick={() => handleMove('down')} disabled={!canMoveDown} className="flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-[var(--ink)] hover:bg-[var(--surface-2)] disabled:opacity-35">
+                <button type="button" onClick={() => handleMove('down')} disabled={!canMoveDown} className="flex min-h-11 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-[var(--ink)] hover:bg-[var(--surface-2)] disabled:opacity-35">
                   <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" /> Move down
                 </button>
               </>
             )}
-            <button type="button" onClick={handleDelete} disabled={isPending} className="flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-red-600 hover:bg-red-50">
+            <button type="button" onClick={handleDelete} disabled={isPending} className="flex min-h-11 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-red-600 hover:bg-red-50">
               <Trash2 className="h-3.5 w-3.5" aria-hidden="true" /> Delete
             </button>
           </div>

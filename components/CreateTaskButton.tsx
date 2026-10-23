@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { useState, useEffect, useTransition } from 'react';
 import { createTask } from '@/app/actions';
 import { loadFormOptions, peekFormOptions, prefetchFormOptions } from '@/components/formOptions';
@@ -199,9 +199,14 @@ function CreateTaskModal({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-slate-200 sm:hidden" />
-          <h3 id="create-task-title" className="mb-5 sm:mb-6 text-xl font-bold text-slate-800 tracking-tight">
-            {weekly ? 'Create Weekly Task' : 'Create New Task'}
-          </h3>
+          <div className="mb-5 flex items-center justify-between gap-3 sm:mb-6">
+            <h3 id="create-task-title" className="text-xl font-bold tracking-tight text-slate-800">
+              {weekly ? 'Create Weekly Task' : 'Create New Task'}
+            </h3>
+            <button type="button" onClick={onClose} aria-label="Close create task" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900">
+              <X className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
 
           {loading ? (
             <FormSkeleton />

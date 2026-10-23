@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useMemo, useState, useSyncExternalStore } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CreateTaskButton } from '@/components/CreateTaskButton';
 import { TaskCheckItem, type CheckTask } from '@/components/TaskCheckItem';
@@ -45,17 +45,8 @@ export function WeeklyBoard({ allTasks }: { allTasks: CheckTask[] }) {
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'open' | 'done'>('all');
-  const dayStripRef = useRef<HTMLDivElement>(null);
   const week = useMemo(() => today ? getWeek(today, weekOffset) : null, [today, weekOffset]);
   const activeKey = selectedKey ?? (weekOffset === 0 ? today : week?.start);
-
-  useEffect(() => {
-    const strip = dayStripRef.current;
-    const selected = strip?.querySelector<HTMLElement>('[aria-pressed="true"]');
-    if (!strip || !selected || strip.scrollWidth <= strip.clientWidth) return;
-    const selectedLeft = selected.getBoundingClientRect().left - strip.getBoundingClientRect().left + strip.scrollLeft;
-    strip.scrollTo({ left: selectedLeft - (strip.clientWidth - selected.clientWidth) / 2, behavior: 'smooth' });
-  }, [activeKey]);
 
   const tasksByKey = useMemo(() => {
     if (!week) return {};
@@ -97,11 +88,11 @@ export function WeeklyBoard({ allTasks }: { allTasks: CheckTask[] }) {
           <p className="mt-1 text-sm text-[var(--muted)]">Pick a day to see and manage its tasks.</p>
         </div>
         <div className="flex items-center gap-1.5">
-          <button type="button" onClick={() => changeWeek(weekOffset - 1)} aria-label="Previous week" className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--line)] bg-white text-[var(--ink)] hover:bg-[var(--surface-2)]">
+          <button type="button" onClick={() => changeWeek(weekOffset - 1)} aria-label="Previous week" className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--line)] bg-white text-[var(--ink)] hover:bg-[var(--surface-2)]">
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <button type="button" onClick={() => changeWeek(0)} className="min-h-10 rounded-xl border border-[var(--line)] bg-white px-3 text-xs font-semibold text-[var(--ink)] hover:bg-[var(--surface-2)]">Today</button>
-          <button type="button" onClick={() => changeWeek(weekOffset + 1)} aria-label="Next week" className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--line)] bg-white text-[var(--ink)] hover:bg-[var(--surface-2)]">
+          <button type="button" onClick={() => changeWeek(0)} className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3 text-xs font-semibold text-[var(--ink)] hover:bg-[var(--surface-2)]">Today</button>
+          <button type="button" onClick={() => changeWeek(weekOffset + 1)} aria-label="Next week" className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--line)] bg-white text-[var(--ink)] hover:bg-[var(--surface-2)]">
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
@@ -109,10 +100,9 @@ export function WeeklyBoard({ allTasks }: { allTasks: CheckTask[] }) {
 
       <section aria-label="Choose a day" className="rounded-2xl border border-[var(--line)] bg-white p-3 shadow-sm sm:p-4">
         <p className="mb-3 px-1 text-sm font-semibold text-[var(--muted)]">{week.weekLabel}</p>
-        <div ref={dayStripRef} className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-thin xl:mx-0 xl:grid xl:grid-cols-8 xl:overflow-visible xl:px-0 xl:pb-0">
+        <div className="grid grid-cols-4 gap-2 lg:grid-cols-8">
           {week.days.map((day) => {
             const tasks = tasksByKey[day.key] ?? [];
-            const done = tasks.filter((item) => item.task.status === 'COMPLETED').length;
             const active = day.key === activeDay.key;
             return (
               <button
@@ -120,12 +110,12 @@ export function WeeklyBoard({ allTasks }: { allTasks: CheckTask[] }) {
                 type="button"
                 onClick={() => selectDay(day.key)}
                 aria-pressed={active}
-                aria-label={`${day.full}: ${tasks.length} tasks, ${done} completed`}
-                className={`flex min-h-24 min-w-24 shrink-0 flex-col items-start rounded-xl border p-2.5 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] xl:min-w-0 ${active ? 'border-[var(--accent)] bg-[var(--accent)] text-white shadow-sm shadow-blue-600/20' : 'border-[var(--line)] bg-[var(--surface-2)]/50 text-[var(--ink)] hover:border-blue-300 hover:bg-[var(--accent-soft)]/50'}`}
+                aria-label={`${day.full}: ${tasks.length} tasks, ${tasks.filter((item) => item.task.status === 'COMPLETED').length} completed`}
+                className={`flex min-h-20 min-w-0 flex-col items-start rounded-xl border p-2 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] sm:p-2.5 ${active ? 'border-[var(--accent)] bg-[var(--accent)] text-white shadow-sm shadow-blue-600/20' : 'border-[var(--line)] bg-[var(--surface-2)]/50 text-[var(--ink)] hover:border-blue-300 hover:bg-[var(--accent-soft)]/50'}`}
               >
                 <span className={`text-[11px] font-semibold ${active ? 'text-blue-100' : 'text-[var(--muted)]'}`}>{day.short}</span>
-                <span className="mt-0.5 text-xl font-bold tabular-nums">{day.dayNumber ?? '•'}</span>
-                <span className={`mt-auto text-[11px] font-medium tabular-nums ${active ? 'text-blue-100' : 'text-[var(--muted)]'}`}>{tasks.length ? `${done}/${tasks.length} done` : 'No tasks'}</span>
+                <span className="mt-0.5 text-lg font-bold tabular-nums sm:text-xl">{day.dayNumber ?? '•'}</span>
+                <span className={`mt-auto text-[10px] font-medium tabular-nums sm:text-[11px] ${active ? 'text-blue-100' : 'text-[var(--muted)]'}`}>{tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}</span>
               </button>
             );
           })}
@@ -147,7 +137,7 @@ export function WeeklyBoard({ allTasks }: { allTasks: CheckTask[] }) {
         {selectedTasks.length > 0 && (
           <div className="flex gap-1 overflow-x-auto border-b border-[var(--line)] px-4 py-2 sm:px-6" aria-label="Filter tasks">
             {(['all', 'open', 'done'] as const).map((option) => (
-              <button key={option} type="button" onClick={() => setFilter(option)} aria-pressed={filter === option} className={`min-h-9 rounded-lg px-3 text-sm font-semibold transition-colors ${filter === option ? 'bg-[var(--accent-soft)] text-[var(--accent)]' : 'text-[var(--muted)] hover:bg-[var(--surface-2)]'}`}>
+              <button key={option} type="button" onClick={() => setFilter(option)} aria-pressed={filter === option} className={`min-h-11 rounded-lg px-3 text-sm font-semibold transition-colors ${filter === option ? 'bg-[var(--accent-soft)] text-[var(--accent)]' : 'text-[var(--muted)] hover:bg-[var(--surface-2)]'}`}>
                 {option === 'all' ? `All ${selectedTasks.length}` : option === 'open' ? `To do ${selectedTasks.length - doneCount}` : `Done ${doneCount}`}
               </button>
             ))}

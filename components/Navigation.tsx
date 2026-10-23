@@ -125,7 +125,7 @@ export function MobileNav() {
               <span className="absolute top-0 h-0.5 w-6 rounded-full bg-[var(--accent)]" />
             )}
             <item.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={active ? 2.25 : 1.75} />
-            <span className="max-w-full truncate text-[8px] font-semibold leading-none tracking-tight">
+              <span className="max-w-full truncate text-[10px] font-semibold leading-none tracking-tight">
               {item.name}
             </span>
           </Link>

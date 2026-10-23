@@ -20,11 +20,13 @@ export function CreateTaskButton({
   variant = 'default',
   defaultDate,
   weekly = false,
+  label = 'Add Task',
 }: {
   fab?: boolean;
   variant?: 'default' | 'column';
   defaultDate?: string;
   weekly?: boolean;
+  label?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -80,10 +82,10 @@ export function CreateTaskButton({
         className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/25 hover:bg-blue-700 active:scale-[0.98] transition-all"
       >
         <Plus className="h-4 w-4" strokeWidth={2.5} />
-        Add Task
+        {label}
       </button>
 
-      {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} defaultDate={defaultDate} />}
+      {isOpen && <CreateTaskModal onClose={() => setIsOpen(false)} defaultDate={defaultDate} weekly={weekly} />}
     </>
   );
 }

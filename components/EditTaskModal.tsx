@@ -43,7 +43,7 @@ export function EditTaskModal({ data, onClose }: { data: CheckTask; onClose: () 
   const [categoryId, setCategoryId] = useState(data.task.categoryId || '');
   const [topicId, setTopicId] = useState(data.task.topicId || '');
   const [projectId, setProjectId] = useState(data.task.projectId || '');
-  const plannedDate = String(data.task.plannedDate || '').slice(0, 10);
+  const [plannedDate, setPlannedDate] = useState(String(data.task.plannedDate || '').slice(0, 10));
 
   useEffect(() => {
     let cancelled = false;
@@ -82,6 +82,7 @@ export function EditTaskModal({ data, onClose }: { data: CheckTask; onClose: () 
         categoryId,
         topicId: showTopics && topicId ? topicId : undefined,
         projectId: showProjects && projectId ? projectId : undefined,
+        plannedDate,
       });
       onClose();
     });
@@ -139,11 +140,10 @@ export function EditTaskModal({ data, onClose }: { data: CheckTask; onClose: () 
                   <input
                     id="edit-task-date"
                     type="date"
-                    readOnly
-                    disabled
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base sm:text-sm text-slate-500 cursor-not-allowed"
+                    required
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base sm:text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     value={plannedDate}
-                    title="Task date is fixed when created and cannot be changed"
+                    onChange={(event) => setPlannedDate(event.target.value)}
                   />
                 </div>
               </div>

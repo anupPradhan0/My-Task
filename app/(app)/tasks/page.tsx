@@ -1,5 +1,4 @@
 import { getTasks } from '@/app/actions';
-import { CreateTaskButton } from '@/components/CreateTaskButton';
 import { WeeklyBoard } from '@/components/WeeklyBoard';
 
 export default async function TasksPage() {
@@ -8,7 +7,6 @@ export default async function TasksPage() {
   return (
     <div>
       <WeeklyBoard allTasks={allTasks} />
-      <CreateTaskButton fab />
     </div>
   );
 }
